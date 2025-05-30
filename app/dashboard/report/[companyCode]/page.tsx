@@ -50,7 +50,7 @@ export default function Report() {
     fetchWarehouses();
   }, [user?.companyCode]);
 
-  if (loading) return <div>Loading warehouses... hold tight 🚀</div>;
+  if (loading) return <div className="w-full h-screen flex items-center justify-center">Loading warehouses... hold tight</div>;
   if (error) return <div className="text-red-600">Error: {error}</div>;
 
   return (
@@ -62,7 +62,7 @@ export default function Report() {
           </h2>
           <span>
             <ExportButton csvData={warehouses} pdfELementId="warehouse-table" />
-  </span>
+          </span>
         </div>
 
         <div className="overflow-x-auto w-full py-2" id="warehouse-table">

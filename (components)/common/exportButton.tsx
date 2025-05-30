@@ -8,12 +8,12 @@ type ExportButtonProps = {
 
 export const ExportButton: React.FC<ExportButtonProps> = ({
   csvData,
-  pdfElementId,
+  pdfELementId,
 }) => {
   const [hovering, setHovering] = useState(false);
 
   const handleExport = (type: "pdf" | "csv") => {
-    if (type === "pdf") exportToPdf(pdfElementId);
+    if (type === "pdf") exportToPdf(pdfELementId);
     else exportCSV(csvData);
     setHovering(false);
   };
