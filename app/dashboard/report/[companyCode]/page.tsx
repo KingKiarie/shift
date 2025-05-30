@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { decodeJWT } from "@/lib/decodeJwt";
+import { ExportButton } from "@/(components)/common/exportButton";
+import { Pagination } from "@/(components)/pagination/pagination";
 
 interface Warehouse {
   svID: number;
@@ -15,6 +17,12 @@ export default function Report() {
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemsPerPage = 10;
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
+  const currentItems = warehouses.slice(startIdx, endIdx);
 
   useEffect(() => {
     if (!user?.companyCode) {
@@ -48,11 +56,17 @@ export default function Report() {
   return (
     <section>
       <div className="max-w-[90%] mx-auto">
-        <h2 className="text-xl font-bold mb-4">
-          Warehouse Report for {user?.companyCode}
-        </h2>
-        <div className="overflow-x-auto w-full py-4">
-          <table className="min-w-full bg-white border border-gray-200 rounded-md overflow-hidden">
+        <div className="flex flex-col lg:flex-row items-center justify-between py-2">
+          <h2 className="text-[16px] lg:text-[20px] font-bold mb-4">
+            Warehouse Report for {user?.companyCode}
+          </h2>
+          <span>
+            <ExportButton csvData={warehouses} pdfELementId="warehouse-table" />
+  </span>
+        </div>
+
+        <div className="overflow-x-auto w-full py-2" id="warehouse-table">
+          <table className="min-w-full bg-white border border-gray-200  overflow-hidden">
             <thead className="bg-[#1e1e1e] text-white">
               <tr className="text-[12px] md:text-[14px]">
                 <th className="py-3 px-6 text-left border-r-2 border-white">
@@ -61,13 +75,13 @@ export default function Report() {
                 <th className="py-3 px-6 text-left border-r-2 border-white">
                   Warehouse Code
                 </th>
-                <th className="py-3 px-6 text-left border-r-2 border-white">
+                <th className="py-3 px-6 text-left  border-r-2 border-black">
                   Warehouse Name
                 </th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
-              {warehouses.map(({ svID, whseCode, whseName }) => (
+              {currentItems.map(({ svID, whseCode, whseName }) => (
                 <tr
                   key={svID}
                   className="border-b border-gray-200 hover:bg-gray-100 transition-all duration-200"
@@ -83,6 +97,17 @@ export default function Report() {
               ))}
             </tbody>
           </table>
+          <div className="w-full max-w-[80%] mx-auto py-20 items-center justify-center">
+            <Pagination
+              currentPage={currentPage}
+              totalItems={warehouses.length}
+              itemsPerPage={itemsPerPage}
+              onPageChange={(page) => {
+                setCurrentPage(page);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
+          </div>
         </div>
       </div>
     </section>

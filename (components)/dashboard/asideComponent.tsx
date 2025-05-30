@@ -61,7 +61,7 @@ export default function AsideMenu() {
   }
 
   return (
-    <nav className="w-full bg-[#1e1e1e] lg:h-screen">
+    <nav className="w-full bg-[#1e1e1e] h-[100%]">
       <aside className="px-4 flex flex-col items-start justify-center space-y-4">
         <div>
           <h1 className="text-[24px] md:text-[32px] font-bold text-white">
