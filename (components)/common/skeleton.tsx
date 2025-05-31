@@ -2,7 +2,7 @@
 
 export default function SkeletonLoader({ count = 3 }: { count?: number }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 h-screen bg-gray-600 p-4">
       {[...Array(count)].map((_, i) => (
         <div
           key={i}

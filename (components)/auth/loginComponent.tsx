@@ -21,7 +21,7 @@ export default function LoginComponent() {
         console.error("No warehouse found in token, contact support");
         return;
       }
-      router.replace(`/dashboard/report/${company}`);
+      router.replace(`/dashboard/${company}`);
     }
   }, []);
 
@@ -50,7 +50,7 @@ export default function LoginComponent() {
       setSuccess(true);
 
       setTimeout(() => {
-        router.push(`/dashboard/report/${company}`);
+        router.push(`/dashboard/${company}`);
       }, 2000);
     } catch (error: any) {
       console.error("Login failed:", error);
@@ -70,7 +70,7 @@ export default function LoginComponent() {
           <div className="w-full h-auto lg:h-screen absolute bg-black/60 hover:bg-black/30 duration-300 ease-in"></div>
           <div className="h-full w-full max-w-[90%] items-center justify-center flex flex-col space-y-4 z-40">
             <h1 className="text-[32px] lg:text-[56px] text-center text-white font-bold">
-              Get informed with our pride systems
+              Get informed with our Prime Mattress
             </h1>
             <p className="text-white text-[18px] md:text-[20px] font-medium">
               Learn · Explore · get analytics

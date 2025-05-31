@@ -12,7 +12,7 @@ interface Warehouse {
   whseName: string;
 }
 
-export default function Report() {
+export default function WarehouseReport() {
   const user = decodeJWT();
   const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +50,12 @@ export default function Report() {
     fetchWarehouses();
   }, [user?.companyCode]);
 
-  if (loading) return <div className="w-full h-screen flex items-center justify-center">Loading warehouses... hold tight</div>;
+  if (loading)
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        Loading warehouses... hold tight
+      </div>
+    );
   if (error) return <div className="text-red-600">Error: {error}</div>;
 
   return (

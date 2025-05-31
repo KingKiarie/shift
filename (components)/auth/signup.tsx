@@ -22,7 +22,7 @@ export default function SignupComponent() {
           <div className="w-full text-center py-12">
             <h1 className="text-[20px] md:text-[24px] lg:text-[32px] font-bold">
               Signup for more at{" "}
-              <span className="text-amber-600">Pride Systems</span>👋
+              <span className="text-amber-600">Prime Mattress</span>👋
             </h1>
           </div>
           <form action="post " className="max-w-[80%] mx-auto w-full space-y-4">
