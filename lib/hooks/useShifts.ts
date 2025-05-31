@@ -8,7 +8,7 @@ export interface Shift {
   whseName: string;
 }
 
-export const shiftReport = (companyCode: string | null | undefined) => {
+export const useShifts = (companyCode: string | null | undefined) => {
   return useQuery<Shift[], Error>({
     queryKey: ["shift", companyCode],
     queryFn: async () => {
