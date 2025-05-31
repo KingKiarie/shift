@@ -1,24 +1,36 @@
-export async function LoginUser(credentials: { username: string; password: string }) {
-  const response = await fetch("/api/proxy/login", {
-    method: "POST",
+export async function clientFetch<T>(
+  url: string,
+  method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
+  body?: any,
+  token?: string
+): Promise<T> {
+  const res = await fetch(url, {
+    method,
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      body: body ? JSON.stringify(body) : undefined,
     },
-    body: JSON.stringify(credentials),
   });
 
-  const contentType = response.headers.get("content-type") || "";
+  const contentType = res.headers.get("content-type") || "";
+  const isJSON = contentType.includes("application/json");
 
-  if (!response.ok) {
-    const errMessage = contentType.includes("application/json")
-      ? (await response.json()).message
-      : await response.text();
-    throw new Error(errMessage || "Failed to fetch");
+  if (!res.ok) {
+    const errMessage = isJSON ? (await res.json()).message : await res.text();
+    throw new Error(errMessage || "request Failed");
   }
 
-  if (contentType.includes("application/json")) {
-    return await response.json();
-  } else {
-    throw new Error("Unexpected non-JSON response");
-  }
+  return isJSON ? await res.json() : ({} as T);
+}
+
+export async function LoginUser(credentials: {
+  usernme: string;
+  password: string;
+}) {
+  return clientFetch<{ token: string }>(
+    "/api/proxy/login",
+    "POST",
+    credentials
+  );
 }

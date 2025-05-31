@@ -15,16 +15,18 @@ export type TokenPayload = {
   SalesRepName?: string;
 };
 
-export function decodeJWT(): TokenPayload | null {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+export function decodeJWT(token?: string): TokenPayload | null {
+  const localToken =
+    typeof window !== "undefined"
+      ? token || localStorage.getItem("token")
+      : null;
 
-  if (!token) {
+  if (!localToken) {
     return null;
   }
 
   try {
-    const decoded = jwtDecode<TokenPayload>(token);
+    const decoded = jwtDecode<TokenPayload>(localToken);
     const now = Date.now() / 1000;
 
     if (decoded.exp && decoded.exp < now) {
