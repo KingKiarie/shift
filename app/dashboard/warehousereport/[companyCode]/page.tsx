@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { decodeJWT } from "@/lib/decodeJwt";
 import { ExportButton } from "@/(components)/common/exportButton";
 import { Pagination } from "@/(components)/pagination/pagination";
+import { useWarehouses } from "@/lib/hooks/useWarehouse";
 
 interface Warehouse {
   svID: number;
@@ -14,10 +15,14 @@ interface Warehouse {
 
 export default function WarehouseReport() {
   const user = decodeJWT();
-  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isClient, setIsClient] = useState(false);
+
+  const {
+    data: warehouses = [],
+    isLoading,
+    error,
+  } = useWarehouses(user?.companyCode);
 
   const itemsPerPage = 10;
   const startIdx = (currentPage - 1) * itemsPerPage;
@@ -25,38 +30,9 @@ export default function WarehouseReport() {
   const currentItems = warehouses.slice(startIdx, endIdx);
 
   useEffect(() => {
-    if (!user?.companyCode) {
-      setError("No company code available");
-      setLoading(false);
-      return;
-    }
-
-    async function fetchWarehouses() {
-      try {
-        const res = await fetch(
-          `/api/proxy/warehouse?companyCode=${user?.companyCode}`
-        );
-
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-        const data = await res.json();
-        setWarehouses(data.data);
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchWarehouses();
-  }, [user?.companyCode]);
-
-  if (loading)
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        Loading warehouses... hold tight
-      </div>
-    );
-  if (error) return <div className="text-red-600">Error: {error}</div>;
+    setIsClient(true);
+  }, []);
+  if (!isClient) return null;
 
   return (
     <section>
