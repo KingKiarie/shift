@@ -1,4 +1,5 @@
 import { jwtDecode } from "jwt-decode";
+import { getToken } from "./token";
 
 export type TokenPayload = {
   userName: string;
@@ -16,10 +17,7 @@ export type TokenPayload = {
 };
 
 export function decodeJWT(token?: string): TokenPayload | null {
-  const localToken =
-    typeof window !== "undefined"
-      ? token || localStorage.getItem("token")
-      : null;
+  const localToken = getToken();
 
   if (!localToken) {
     return null;

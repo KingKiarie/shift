@@ -14,13 +14,17 @@
   h4,
   h5,
   h6,
-  button {
-    font-family: var(--font-prim); /* Inter for headings */
+  button,
+  label,
+  th {
+    font-family: var(--font-prim);
   }
   p,
   span,
   ul,
-  li {
+  li,
+  input,
+  tr {
     font-family: var(--font-sec);
   }
 }

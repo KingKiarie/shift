@@ -11,7 +11,9 @@ export default function SignupComponent() {
           <div className="w-full h-auto lg:h-[100%]  absolute bg-black/60 hover:bg-black/30 duration-300 ease-in"></div>
           <div className="h-full w-full max-w-[90%] lg:max-w-[90%] items-center justify-center flex flex-col space-y-4 z-40">
             <h1 className="text-[32px] lg:text-[56px] text-center text-white font-bold">
-              Get informed with our pride systems
+              Get Informations from{" "}
+              <span className="text-red-500">Prime Mattress</span>{" "}
+              <span className="text-blue-500">Shift</span>
             </h1>
             <p className="text-white text-[18px] md:text-[20px] font-medium">
               Trust · Explore · get analytics
@@ -22,7 +24,7 @@ export default function SignupComponent() {
           <div className="w-full text-center py-12">
             <h1 className="text-[20px] md:text-[24px] lg:text-[32px] font-bold">
               Signup for more at{" "}
-              <span className="text-amber-600">Prime Mattress</span>👋
+              <span className="text-red-600">Prime Mattress</span>👋
             </h1>
           </div>
           <form action="post " className="max-w-[80%] mx-auto w-full space-y-4">

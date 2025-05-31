@@ -1,9 +1,10 @@
 "use client";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, JSX } from "react";
 import SkeletonLoader from "../common/skeleton";
 import { CalendarSync, LayoutDashboard, Warehouse } from "lucide-react";
+import { removeToken } from "@/lib/token";
 
 type NavLink = {
   name: string;
@@ -27,7 +28,7 @@ export default function AsideMenu() {
   }, [clientPathname]);
 
   const handleLogOut = () => {
-    localStorage.removeItem("token");
+    removeToken();
     router.push("/login");
   };
 

@@ -18,7 +18,6 @@ export async function GET(req: NextRequest) {
 
     const text = await backendRes.text();
 
-    // Debug logs (helpful during dev)
     console.log("Warehouse API Status:", backendRes.status);
     console.log("Warehouse API Body:", text);
 

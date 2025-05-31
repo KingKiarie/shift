@@ -1,7 +1,12 @@
+"use client";
+
 import DashFooter from "@/(components)/common/dashFooter";
 import AsideMenu from "@/(components)/dashboard/asideComponent";
 import Head from "@/(components)/dashboard/head";
 import { ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryQlient = new QueryClient();
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
@@ -12,7 +17,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </nav>
         <main className="w-3/4">
           <Head />
-          {children}
+          <QueryClientProvider client={queryQlient}>
+            {children}
+          </QueryClientProvider>
         </main>
       </section>
       <footer>{/* <DashFooter /> */}</footer>
