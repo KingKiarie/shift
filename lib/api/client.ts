@@ -1,9 +1,9 @@
 import axios, { AxiosRequestConfig, Method } from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_PROXY_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 if (!BASE_URL) {
-  throw new Error("NEXT_PUBLIC_API_PROXY_URL is not defined in .env.local");
+  throw new Error("NEXT_PUBLIC_API_BASE_URL is not defined in .env.local");
 }
 
 const axiosInstance = axios.create({

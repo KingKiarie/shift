@@ -11,7 +11,7 @@ export const useSalesSummary = (shiftID: string) => {
   const companyCode = decoded?.companyCode;
 
   return useQuery<ShiftSalesSummary>({
-    queryKey: ["salesSummary", shiftID, companyCode, userID],
+    queryKey: ["salesSummary", shiftID, companyCode, userID, token],
     queryFn: () => fetchSalesSummary(shiftID, companyCode!, userID!, token!),
     enabled: !!shiftID && !!companyCode && !!userID && !!token,
   });

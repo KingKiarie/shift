@@ -125,12 +125,12 @@ export default function AsideMenu() {
                     <Link
                       href={
                         companyCode && userId
-                          ? `/dashboard/shift/previousshifts/${companyCode}/${userId}`
+                          ? `/dashboard/shift/previous-shifts/${companyCode}/${userId}`
                           : "#"
                       }
                       className={`block px-4 py-2 rounded-md ${
                         pathname.startsWith(
-                          `/dashboard/shift/previousshifts/${companyCode}/${userId}`
+                          `/dashboard/shift/previous-shifts/${companyCode}/${userId}`
                         )
                           ? "bg-blue-600 text-white"
                           : "hover:bg-[#2d2d2d]"
@@ -148,12 +148,12 @@ export default function AsideMenu() {
                     <Link
                       href={
                         shiftId && companyCode && userId
-                          ? `/dashboard/shift/shiftsalessummary/${shiftId}/${companyCode}/${userId}`
+                          ? `/dashboard/shift/shift-sales-summary/${shiftId}/${companyCode}/${userId}`
                           : "#"
                       }
                       className={`block px-4 py-2 rounded-md ${
                         pathname.startsWith(
-                          `/dashboard/shift/shiftsalessummary/${shiftId}`
+                          `/dashboard/shift/shift-sales-summary/${shiftId}`
                         )
                           ? "bg-blue-600 text-white"
                           : "hover:bg-[#2d2d2d]"
@@ -171,12 +171,12 @@ export default function AsideMenu() {
                     <Link
                       href={
                         shiftId && companyCode && userId
-                          ? `/dashboard/shift/shiftreport/${shiftId}/${companyCode}/${userId}`
+                          ? `/dashboard/shift/shift-report/${shiftId}/${companyCode}/${userId}`
                           : "#"
                       }
                       className={`block px-4 py-2 rounded-md ${
                         pathname.startsWith(
-                          `/dashboard/shift/shiftreport/${shiftId}`
+                          `/dashboard/shift/shift-report/${shiftId}`
                         )
                           ? "bg-blue-600 text-white"
                           : "hover:bg-[#2d2d2d]"

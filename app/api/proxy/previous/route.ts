@@ -1,5 +1,3 @@
-// app/api/proxy/previous/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
 import { apiClient } from "@/lib/api/axios";
 import { PreviousShiftsResponse } from "@/lib/types/shift";
@@ -9,6 +7,7 @@ export async function GET(req: NextRequest) {
   const userID = req.nextUrl.searchParams.get("userID");
 
   const authHeader = req.headers.get("authorization");
+  const BACKEND_URL = process.env.NEXT_API_BACKEND_URL;
 
   if (!companyCode || !userID || !authHeader) {
     return NextResponse.json(
@@ -19,10 +18,10 @@ export async function GET(req: NextRequest) {
 
   try {
     const { data } = await apiClient.get<PreviousShiftsResponse>(
-      `/shift/previousShifts/${companyCode}/${userID}`,
+      `${BACKEND_URL}/shift/previousShifts/${companyCode}/${userID}`,
       {
         headers: {
-          Authorization: authHeader, // 🔥 forward client token to backend
+          Authorization: authHeader,
         },
       }
     );

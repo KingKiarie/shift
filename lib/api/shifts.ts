@@ -1,5 +1,4 @@
 import { apiClient } from "./axios";
-// import { ShiftReport, ShiftSalesSummary, PreviousShif
 import {
   ShiftReportItem,
   ShiftSalesSummary,
@@ -20,20 +19,20 @@ export const fetchShiftReport = async (
 export const fetchSalesSummary = async (
   shiftID: string,
   companyCode: string,
-  userID: string
+  userID: string,
+  p0: string
 ): Promise<ShiftSalesSummary> => {
   const { data } = await apiClient.get(
     `/shift/shiftSalesSummary/${shiftID}/${companyCode}/${userID}`
   );
   return data;
 };
-
 export const fetchPreviousShifts = async (
   companyCode: string,
   userID: string
-): Promise<PreviousShiftsResponse[]> => {
+): Promise<PreviousShiftsResponse> => {
   const { data } = await apiClient.get(
     `/shift/previousShifts/${companyCode}/${userID}`
   );
-  return data.shiftList;
+  return data; 
 };

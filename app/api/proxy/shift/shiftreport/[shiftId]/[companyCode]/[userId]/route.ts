@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getTokenFromHeader
+import { getToken } from "@/lib/token";
 
 export async function GET(
   req: NextRequest,
@@ -8,13 +8,15 @@ export async function GET(
   }: { params: { shiftId: string; companyCode: string; userId: string } }
 ) {
   const { shiftId, companyCode, userId } = params;
-  const token = getTokenFromHeader(req);
+  const token = getToken();
 
   if (!token) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const url = `http://102.130.119.149:3000/shift/shiftReport/${shiftId}/${companyCode}/${userId}`;
+  const BACKEND_URL = process.env.NEXT_API_BACKEND_URL;
+
+  const url = `${BACKEND_URL}/shift/shiftReport/${shiftId}/${companyCode}/${userId}`;
 
   try {
     const res = await fetch(url, {

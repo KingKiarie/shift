@@ -6,6 +6,7 @@ export async function GET(
   context: { params: { shiftId: string; companyCode: string; userId: string } }
 ) {
   const { shiftId, companyCode, userId } = context.params;
+  const BACKEND_URL = process.env.NEXT_API_BACKEND_URL;
 
   if (!shiftId || !companyCode || !userId) {
     return NextResponse.json(
@@ -16,7 +17,7 @@ export async function GET(
 
   try {
     const res = await fetch(
-      `http://102.130.119.149:3000/shift/shiftSalesSummary/${shiftId}/${companyCode}/${userId}`
+      `${BACKEND_URL}/shift/shiftSalesSummary/${shiftId}/${companyCode}/${userId}`
     );
 
     if (!res.ok) {

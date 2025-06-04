@@ -17,15 +17,21 @@ export default function LoginComponent() {
   useEffect(() => {
     const token = getToken();
     if (token) {
-      const payload = decodeJWT();
-      const company = payload?.companyCode;
-      if (!company) {
-        console.error("No warehouse found in token, contact support");
-        return;
+      try {
+        const payload = decodeJWT();
+        const company = payload?.companyCode;
+        if (company) {
+          router.replace(`/dashboard/${company}`);
+        } else {
+          console.error("No company code found in token");
+          localStorage.removeItem("token");
+        }
+      } catch (err) {
+        console.error("Invalid token:", err);
+        localStorage.removeItem("token");
       }
-      router.replace(`/dashboard/${company}`);
     }
-  }, []);
+  }, [router]);
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,21 +44,35 @@ export default function LoginComponent() {
       password: form.get("password") as string,
     };
 
+    // Basic validation
+    if (!credentials.username || !credentials.password) {
+      setError("Please enter both username and password");
+      return;
+    }
+
     login(credentials, {
       onSuccess: () => {
-        const payload = decodeJWT();
-        const company = payload?.companyCode;
+        try {
+          const payload = decodeJWT();
+          const company = payload?.companyCode;
 
-        if (!company) {
-          setError("No company code found in token.");
-          return;
+          if (!company) {
+            setError("No company code found in authentication token.");
+            return;
+          }
+
+          setSuccess(true);
+          setTimeout(() => {
+            router.push(`/dashboard/${company}`);
+          }, 1000);
+        } catch (err) {
+          setError("Failed to process authentication token.");
         }
-
-        setSuccess(true);
-        router.push(`/dashboard/${company}`);
       },
-      onError: () => {
-        setError("Login failed. Please check your credentials.");
+      onError: (err: any) => {
+        setError(
+          err?.message || "Login failed. Please check your credentials."
+        );
       },
     });
   };
@@ -60,7 +80,6 @@ export default function LoginComponent() {
   return (
     <section className="w-full h-auto lg:h-screen flex flex-col items-center justify-center py-12 md:py-16 lg:py-20">
       <div className="w-full flex flex-col md:flex-row lg:flex-row gap-4">
-        {/* Left side */}
         <div
           className="relative w-full h-[50vh] lg:h-screen bg-cover bg-center flex flex-col items-center justify-center"
           style={{ backgroundImage: "url('/login.jpg')" }}

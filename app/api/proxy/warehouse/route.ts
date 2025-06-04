@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const companyCode = searchParams.get("companyCode");
+  const BACKEND_URL = process.env.NEXT_API_BACKEND_URL;
 
   if (!companyCode) {
     return NextResponse.json(
@@ -12,9 +13,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const backendRes = await fetch(
-      `http://102.130.119.149:3000/warehouse/${companyCode}`
-    );
+    const backendRes = await fetch(`${BACKEND_URL}/warehouse/${companyCode}`);
 
     const contentType = backendRes.headers.get("content-type");
     const isJSON = contentType?.includes("application/json");
