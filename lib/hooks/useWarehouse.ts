@@ -1,12 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+import { Warehouse } from "../types/warehouse";
 import axios from "axios";
-
-export interface Warehouse {
-  shiftID: number;
-  shiftStart: TimeRanges;
-  shiftEnd: TimeRanges;
-  shiftStatus: boolean;
-}
 
 export const useWarehouses = (companyCode: string | null | undefined) => {
   return useQuery<Warehouse[], Error>({

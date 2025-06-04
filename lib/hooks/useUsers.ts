@@ -1,17 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
+import { fetchUsers } from "../api/users";
 
-export function useCompanyUsers(companyCode: string | undefined) {
+export const useUsers = (companyCode: string) => {
   return useQuery({
-    queryKey: ["companyUser", companyCode],
-    queryFn: async () => {
-      if (!companyCode) throw new Error("company code is missing");
-
-      const res = await fetch(
-        `/api/proxy/user/getUsers?companyCode=${companyCode}`
-      );
-      if (!res.ok) throw new Error("Failed to fetch Users");
-      return res.json();
-    },
-    enabled: !!companyCode,
+    queryKey: ["users", companyCode],
+    queryFn: () => fetchUsers(companyCode),
   });
-}
+};

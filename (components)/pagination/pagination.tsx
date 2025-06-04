@@ -25,7 +25,7 @@ export const Pagination: FC<PaginationProps> = ({
   };
 
   return (
-    <div>
+    <div className="w-full flex items-center justify-center gap-2 md:gap-4 lg:gap-6 mt-4">
       <button
         onClick={() => goToPage(currentPage - 1)}
         disabled={currentPage === 1}
@@ -41,8 +41,8 @@ export const Pagination: FC<PaginationProps> = ({
             onClick={() => goToPage(pageNum)}
             className={`px-4 py-2 rounded  ${
               currentPage === pageNum
-                ? "bg-amber-600 text-black"
-                : "bg-gray-100 hover:bg-gray-300"
+                ? "bg-red-300 text-black"
+                : "bg-blue-100 hover:bg-blue-400"
             }`}
           >
             {pageNum}

@@ -1,47 +1,186 @@
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 
-// 🖨️ Export to PDF (Black & White)
 export const exportToPdf = async (
   elementId: string,
-  fileName = "export.pdf"
+  fileName = "export.pdf",
+  data?: object[] 
 ) => {
   const input = document.getElementById(elementId);
   if (!input) return console.error("Element not found");
 
-  // Clone target element to preserve original styles
-  const clone = input.cloneNode(true) as HTMLElement;
+  const pdf = new jsPDF();
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 20;
+  let yPosition = margin;
 
-  // Apply black & white styles to clone
-  clone.style.filter = "grayscale(100%) contrast(150%)";
-  clone.style.color = "black";
-  clone.style.backgroundColor = "white";
-  clone.style.borderColor = "black";
+  if (data && data.length > 0) {
+    pdf.setFontSize(16);
+    pdf.setFont(undefined, 'bold');
+    pdf.text("Data Export", margin, yPosition);
+    yPosition += 15;
 
-  // Apply B&W styles recursively
-  clone.querySelectorAll("*").forEach((el) => {
-    const element = el as HTMLElement;
-    element.style.color = "black";
-    element.style.backgroundColor = "white";
-    element.style.borderColor = "black";
+    pdf.setFontSize(10);
+    pdf.setFont(undefined, 'normal');
+    pdf.text(`Generated on: ${new Date().toLocaleString()}`, margin, yPosition);
+    yPosition += 15;
+
+    const headers = Object.keys(data[0]);
+    
+    pdf.setFontSize(12);
+    pdf.setFont(undefined, 'bold');
+    pdf.text("Data Records:", margin, yPosition);
+    yPosition += 10;
+
+    pdf.setFontSize(10);
+    pdf.setFont(undefined, 'normal');
+    
+    data.forEach((record, index) => {
+      if (yPosition > pageHeight - 40) {
+        pdf.addPage();
+        yPosition = margin;
+      }
+
+      pdf.setFont(undefined, 'bold');
+      pdf.text(`Record ${index + 1}:`, margin, yPosition);
+      yPosition += 8;
+      
+      pdf.setFont(undefined, 'normal');
+      
+      headers.forEach(header => {
+        const value = (record as any)[header];
+        const text = `${header}: ${value ?? 'N/A'}`;
+        
+        const splitText = pdf.splitTextToSize(text, pageWidth - 2 * margin);
+        pdf.text(splitText, margin + 10, yPosition);
+        yPosition += splitText.length * 5;
+        
+        if (yPosition > pageHeight - 20) {
+          pdf.addPage();
+          yPosition = margin;
+        }
+      });
+      
+      yPosition += 5;
+    });
+  } else {
+    const textContent = extractTextContent(input);
+    
+    pdf.setFontSize(16);
+    pdf.setFont(undefined, 'bold');
+    pdf.text("Exported Content", margin, yPosition);
+    yPosition += 15;
+
+    pdf.setFontSize(10);
+    pdf.setFont(undefined, 'normal');
+    pdf.text(`Generated on: ${new Date().toLocaleString()}`, margin, yPosition);
+    yPosition += 15;
+
+    const splitText = pdf.splitTextToSize(textContent, pageWidth - 2 * margin);
+    
+    splitText.forEach(line => {
+      if (yPosition > pageHeight - 20) {
+        pdf.addPage();
+        yPosition = margin;
+      }
+      pdf.text(line, margin, yPosition);
+      yPosition += 6;
+    });
+  }
+
+  pdf.save(fileName);
+};
+
+const extractTextContent = (element: HTMLElement): string => {
+  let content = '';
+  
+  const tables = element.querySelectorAll('table');
+  tables.forEach(table => {
+    const rows = table.querySelectorAll('tr');
+    rows.forEach(row => {
+      const cells = row.querySelectorAll('td, th');
+      const rowData = Array.from(cells).map(cell => cell.textContent?.trim() || '').join(' | ');
+      content += rowData + '\n';
+    });
+    content += '\n';
   });
 
-  clone.style.position = "fixed";
-  clone.style.top = "-10000px";
-  document.body.appendChild(clone);
+  if (tables.length === 0) {
+    content = element.textContent || element.innerText || '';
+  }
 
-  const canvas = await html2canvas(clone);
-  const imgData = canvas.toDataURL("image/png");
+  return content;
+};
+
+export const exportDataTableToPdf = async (
+  data: object[],
+  fileName = "data-export.pdf",
+  title = "Data Export"
+) => {
+  if (!data || !data.length) {
+    return console.error("No data provided for PDF export");
+  }
+
   const pdf = new jsPDF();
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 20;
+  let yPosition = margin;
 
-  const imgProps = pdf.getImageProperties(imgData);
-  const pdfWidth = pdf.internal.pageSize.getWidth();
-  const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+  pdf.setFontSize(16);
+  pdf.setFont(undefined, 'bold');
+  pdf.text(title, margin, yPosition);
+  yPosition += 15;
 
-  pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+  pdf.setFontSize(10);
+  pdf.setFont(undefined, 'normal');
+  pdf.text(`Generated: ${new Date().toLocaleString()}`, margin, yPosition);
+  pdf.text(`Total Records: ${data.length}`, margin, yPosition + 6);
+  yPosition += 20;
+
+  const headers = Object.keys(data[0]);
+  const colWidth = (pageWidth - 2 * margin) / headers.length;
+
+  pdf.setFontSize(9);
+  pdf.setFont(undefined, 'bold');
+  
+  headers.forEach((header, index) => {
+    const x = margin + (index * colWidth);
+    pdf.text(header, x + 2, yPosition);
+  });
+  
+  pdf.line(margin, yPosition + 2, pageWidth - margin, yPosition + 2);
+  yPosition += 12;
+
+  pdf.setFont(undefined, 'normal');
+  
+  data.forEach((record, rowIndex) => {
+    if (yPosition > pageHeight - 30) {
+      pdf.addPage();
+      yPosition = margin;
+      
+      pdf.setFont(undefined, 'bold');
+      headers.forEach((header, index) => {
+        const x = margin + (index * colWidth);
+        pdf.text(header, x + 2, yPosition);
+      });
+      pdf.line(margin, yPosition + 2, pageWidth - margin, yPosition + 2);
+      yPosition += 12;
+      pdf.setFont(undefined, 'normal');
+    }
+
+    headers.forEach((header, colIndex) => {
+      const value = String((record as any)[header] ?? '');
+      const x = margin + (colIndex * colWidth);
+      
+      const truncatedValue = value.length > 15 ? value.substring(0, 12) + '...' : value;
+      pdf.text(truncatedValue, x + 2, yPosition);
+    });
+    
+    yPosition += 8;
+  });
+
   pdf.save(fileName);
-
-  document.body.removeChild(clone);
 };
 
 export const exportCSV = (data: object[], filename = "export.csv") => {
@@ -50,7 +189,7 @@ export const exportCSV = (data: object[], filename = "export.csv") => {
 
   const keys = Object.keys(data[0]);
   const csvRows = [
-    keys.join(","), // header row
+    keys.join(","), 
     ...data.map((row) =>
       keys.map((k) => `"${(row as any)[k] ?? ""}"`).join(",")
     ),

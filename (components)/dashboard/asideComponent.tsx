@@ -1,59 +1,44 @@
 "use client";
-import { useRouter, usePathname } from "next/navigation";
+
 import Link from "next/link";
-import { useState, useEffect, useMemo, JSX } from "react";
+import { usePathname, useRouter, useParams } from "next/navigation";
+import { useState } from "react";
 import SkeletonLoader from "../common/skeleton";
 import { CalendarSync, LayoutDashboard, Warehouse } from "lucide-react";
 import { removeToken } from "@/lib/token";
 
-type NavLink = {
-  name: string;
-  slug: string;
-  icon: JSX.Element;
-};
-
 export default function AsideMenu() {
   const router = useRouter();
+  const pathname = usePathname();
+  const params = useParams();
 
-  const [clientPathname, setClientPathname] = useState<string | null>(null);
+  const companyCode = params?.companyCode as string | null;
+  const userId = params?.userId as string | null;
+  const shiftId = params?.shiftId as string | null;
 
-  useEffect(() => {
-    setClientPathname(window.location.pathname);
-  }, []);
+  const [isShiftMenuOpen, setIsShiftMenuOpen] = useState(false);
 
-  const companyCode = useMemo(() => {
-    if (!clientPathname) return null;
-    const parts = clientPathname.split("/").filter(Boolean);
-    return parts.at(-1);
-  }, [clientPathname]);
+  const NavigationLinks = [
+    {
+      name: "Dashboard",
+      slug: companyCode ? `/dashboard/${companyCode}` : "/dashboard",
+      icon: <LayoutDashboard className="w-8 h-8" />,
+    },
+    {
+      name: "Warehouse Report",
+      slug: companyCode
+        ? `/dashboard/warehousereport/${companyCode}`
+        : "/dashboard/warehousereport",
+      icon: <Warehouse className="w-8 h-8" />,
+    },
+  ];
 
   const handleLogOut = () => {
     removeToken();
     router.push("/login");
   };
 
-  const NavigationLinks: NavLink[] = useMemo(
-    () => [
-      {
-        name: "Dashboard",
-        slug: "",
-        icon: <LayoutDashboard className="w-8 h-8" />,
-      },
-      {
-        name: "Warehouse Report",
-        slug: "warehousereport",
-        icon: <Warehouse className="w-8 h-8" />,
-      },
-      {
-        name: "Shift Report",
-        slug: "shiftreport",
-        icon: <CalendarSync className="w-8 h-8" />,
-      },
-    ],
-    []
-  );
-
-  if (!companyCode) {
+  if (!pathname) {
     return (
       <div className="w-full h-screen">
         <SkeletonLoader />
@@ -62,14 +47,14 @@ export default function AsideMenu() {
   }
 
   return (
-    <nav className="w-full bg-[#1e1e1e] h-[100%] py-8 items-start justify-between">
-      <aside className="px-4 flex flex-col items-start justify-between space-y-4 h-[100%]">
-        <div className="w-full space-y-8">
-          <div className="bg-red-500 p-2 rounded-md flex flex-row space-x-4">
+    <nav className="w-full bg-[#1e1e1e] h-full py-8 flex flex-col justify-between">
+      <aside className="px-4 flex flex-col justify-between h-full">
+        <div className="space-y-8">
+          <div className="bg-red-500 p-2 rounded-md flex items-center space-x-4">
             <div className="bg-white rounded-md">
               <img
                 src="/prime-foam.png"
-                alt=""
+                alt="Prime Foam Logo"
                 className="w-20 h-10 object-cover"
               />
             </div>
@@ -77,42 +62,142 @@ export default function AsideMenu() {
               Prime Mattress
             </h1>
           </div>
-          <div className="w-full">
-            <ul className="w-full space-y-4">
-              {NavigationLinks.map(({ name, slug, icon }) => {
-                const fullPath = `/dashboard${
-                  slug ? `/${slug}` : ""
-                }/${companyCode}`;
-                const isActive =
-                  clientPathname === fullPath ||
-                  (clientPathname && clientPathname.startsWith(fullPath));
 
-                return (
-                  <li
-                    key={name}
-                    className="text-[14px] md:text-[16px] lg:text-[18px] font-bold text-white"
+          <ul className="space-y-4">
+            {NavigationLinks.map(({ name, slug, icon }) => {
+              const isActive = pathname === slug;
+              return (
+                <li key={name} className="text-white font-bold text-lg">
+                  <Link
+                    href={slug}
+                    className={`flex items-center space-x-4 px-6 py-3 rounded-md transition ${
+                      isActive
+                        ? "bg-blue-600 text-white"
+                        : "text-gray-400 hover:bg-[#353238]/40"
+                    }`}
                   >
+                    {icon}
+                    <span>{name}</span>
+                  </Link>
+                </li>
+              );
+            })}
+
+            <li>
+              <button
+                onClick={() => setIsShiftMenuOpen((prev) => !prev)}
+                className="w-full flex justify-between items-center px-6 py-3 rounded-md bg-[#1e1e1e] hover:bg-[#353238]/40 text-white font-bold"
+                aria-expanded={isShiftMenuOpen}
+              >
+                <div className="flex items-center space-x-4">
+                  <CalendarSync className="w-6 h-6" />
+                  <span>Shift</span>
+                </div>
+                <span className="text-2xl select-none">
+                  {isShiftMenuOpen ? "−" : "+"}
+                </span>
+              </button>
+
+              {isShiftMenuOpen && (
+                <ul className="ml-8 mt-2 space-y-2 text-gray-400">
+                  <li>
                     <Link
-                      href={fullPath}
-                      className={`space-x-4 cursor-pointer rounded-md w-full transition-all ease-in duration-200 flex items-center justify-between px-4 py-2 md:px-6 md:py-3 lg:py-4 lg:px-8 text-white ${
-                        isActive
-                          ? "bg-blue-600 text-white font-bold"
-                          : "bg-[#1e1e1e] text-gray-400 hover:bg-[#353238]/40"
+                      href={
+                        companyCode && userId
+                          ? `/dashboard/shift/activeshift/${companyCode}/${userId}`
+                          : "#"
+                      }
+                      className={`block px-4 py-2 rounded-md ${
+                        pathname.startsWith("/dashboard/shift/activeshift")
+                          ? "bg-blue-600 text-white"
+                          : "hover:bg-[#2d2d2d]"
+                      } ${
+                        !(companyCode && userId)
+                          ? "opacity-50 pointer-events-none"
+                          : ""
                       }`}
                     >
-                      <span>{icon}</span>
-                      <p className="w-full">{name}</p>
+                      Active Shift
                     </Link>
                   </li>
-                );
-              })}
-            </ul>
-          </div>
+
+                  <li>
+                    <Link
+                      href={
+                        companyCode && userId
+                          ? `/dashboard/shift/previousshifts/${companyCode}/${userId}`
+                          : "#"
+                      }
+                      className={`block px-4 py-2 rounded-md ${
+                        pathname.startsWith(
+                          `/dashboard/shift/previousshifts/${companyCode}/${userId}`
+                        )
+                          ? "bg-blue-600 text-white"
+                          : "hover:bg-[#2d2d2d]"
+                      } ${
+                        !(companyCode && userId)
+                          ? "opacity-50 pointer-events-none"
+                          : ""
+                      }`}
+                    >
+                      Previous Shifts
+                    </Link>
+                  </li>
+
+                  <li>
+                    <Link
+                      href={
+                        shiftId && companyCode && userId
+                          ? `/dashboard/shift/shiftsalessummary/${shiftId}/${companyCode}/${userId}`
+                          : "#"
+                      }
+                      className={`block px-4 py-2 rounded-md ${
+                        pathname.startsWith(
+                          `/dashboard/shift/shiftsalessummary/${shiftId}`
+                        )
+                          ? "bg-blue-600 text-white"
+                          : "hover:bg-[#2d2d2d]"
+                      } ${
+                        !(shiftId && companyCode && userId)
+                          ? "opacity-50 pointer-events-none"
+                          : ""
+                      }`}
+                    >
+                      Sales Summary
+                    </Link>
+                  </li>
+
+                  <li>
+                    <Link
+                      href={
+                        shiftId && companyCode && userId
+                          ? `/dashboard/shift/shiftreport/${shiftId}/${companyCode}/${userId}`
+                          : "#"
+                      }
+                      className={`block px-4 py-2 rounded-md ${
+                        pathname.startsWith(
+                          `/dashboard/shift/shiftreport/${shiftId}`
+                        )
+                          ? "bg-blue-600 text-white"
+                          : "hover:bg-[#2d2d2d]"
+                      } ${
+                        !(shiftId && companyCode && userId)
+                          ? "opacity-50 pointer-events-none"
+                          : ""
+                      }`}
+                    >
+                      Shift Report
+                    </Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+          </ul>
         </div>
 
-        <div className="w-full">
+        <div>
           <button
-            className="w-full bg-red-500 text-white font-bold hover:bg-red-400 transition-colors ease-in duration-300 cursor-pointer px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4"
+            className="w-full bg-red-500 hover:bg-red-400 text-white font-bold py-3 rounded-md transition"
             onClick={handleLogOut}
           >
             Logout
