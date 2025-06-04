@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchShiftReport } from "../api/shifts";
+import { fetchShiftReport } from "../api/shiftReport";
 
 export const useShiftReport = (
   shiftID: string,
@@ -9,5 +9,6 @@ export const useShiftReport = (
   return useQuery({
     queryKey: ["shiftReport", shiftID, companyCode, userID],
     queryFn: () => fetchShiftReport(shiftID, companyCode, userID),
+    enabled: !!shiftID && !!companyCode && !!userID,
   });
 };

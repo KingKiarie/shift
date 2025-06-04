@@ -2,18 +2,25 @@
 
 import { useParams } from "next/navigation";
 import { decodeJWT } from "@/lib/decodeJwt";
-import PreviousShiftsTable from "@/(components)/reports/previousShiftsTable";
+import { ShiftReportComponent } from "@/(components)/reports/ShiftReport";
 
-export default function PreviousShiftsPage() {
+export default function ShiftReportPage() {
   const params = useParams();
   const user = decodeJWT();
 
-  
+  const shiftID = params?.shiftId as string;
   const companyCode = params?.companyCode as string;
   const userID =
-    (params?.userId as string) || user?.id || user?.userId || user?.sub;
+    (params?.userId as string) ||
+    user?.shiftID ||
+    user?.companyCode ||
+    user?.userName;
 
-  if (!companyCode || !userID) {
+  console.log("Shift ID:", shiftID);
+  console.log("Company Code:", companyCode);
+  console.log("User ID:", userID);
+
+  if (!shiftID || !companyCode || !userID) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md text-center">
@@ -21,7 +28,7 @@ export default function PreviousShiftsPage() {
             Missing Information
           </h2>
           <p className="text-gray-600">
-            Company code or user ID is required to view previous shifts.
+            Shift ID, company code, or user ID is missing. Please try again.
           </p>
         </div>
       </div>
@@ -31,7 +38,11 @@ export default function PreviousShiftsPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <PreviousShiftsTable companyCode={companyCode} userID={userID} />
+        <ShiftReportComponent
+          shiftID={shiftID}
+          companyCode={companyCode}
+          userID={userID}
+        />
       </div>
     </div>
   );

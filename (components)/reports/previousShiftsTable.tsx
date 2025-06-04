@@ -1,7 +1,7 @@
 "use client";
 
 import { usePreviousShifts } from "@/lib/hooks/usePreviousShifts";
-import { PreviousShiftsResponse } from "@/lib/types/shift";
+// import { PreviousShiftsResponse } from "@/lib/types/shift";
 import { useState } from "react";
 import {
   Calendar,
@@ -11,6 +11,7 @@ import {
   Search,
   Filter,
 } from "lucide-react";
+import Link from "next/link";
 
 interface PreviousShiftsTableProps {
   companyCode?: string;
@@ -32,7 +33,6 @@ export default function PreviousShiftsTable({
   const [sortBy, setSortBy] = useState<"date" | "status">("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  // Format date helper
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString("en-US", {
       year: "numeric",
@@ -44,7 +44,6 @@ export default function PreviousShiftsTable({
     });
   };
 
-  // Calculate shift duration
   const calculateDuration = (start: string, end: string | null) => {
     if (!end) return "Ongoing";
 
@@ -57,7 +56,6 @@ export default function PreviousShiftsTable({
     return `${diffHours}h ${diffMinutes}m`;
   };
 
-  // Filter and sort shifts
   const filteredAndSortedShifts =
     data?.shiftList
       ?.filter((shift) => {
@@ -310,10 +308,14 @@ export default function PreviousShiftsTable({
                       <button className="text-blue-600 hover:text-blue-900 font-medium transition-colors">
                         View Details
                       </button>
-                      {shift.shiftStatus === "CLOSE" && (
-                        <button className="text-green-600 hover:text-green-900 font-medium transition-colors">
-                          View Report
-                        </button>
+                      {shift.shiftStatus  && (
+                        <Link
+                          href={`/dashboard/shift/shift-report/${shift.shiftID}/${companyCode}/${userID}`}
+                        >
+                          <button className="text-green-600 hover:text-green-900 font-medium transition-colors">
+                            View Report
+                          </button>
+                        </Link>
                       )}
                     </div>
                   </td>
