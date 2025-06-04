@@ -1,22 +1,68 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter, useParams } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter, useParams, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import SkeletonLoader from "../common/skeleton";
 import { CalendarSync, LayoutDashboard, Warehouse } from "lucide-react";
 import { removeToken } from "@/lib/token";
+import { decodeJWT } from "@/lib/decodeJwt";
 
 export default function AsideMenu() {
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
+  const searchParams = useSearchParams();
 
+  const user = decodeJWT();
+  
+  // Extract user ID from JWT token instead of URL params
+  const userId = user?.id || user?.userId || user?.sub || null;
   const companyCode = params?.companyCode as string | null;
-  const userId = params?.userId as string | null;
-  const shiftId = params?.shiftId as string | null;
+  
+  // Handle shift ID from multiple sources
+  const [shiftId, setShiftId] = useState<string | null>(() => {
+    // First try URL params
+    const paramShiftId = params?.shiftId as string | null;
+    if (paramShiftId) return paramShiftId;
+    
+    // Then try search params
+    const searchShiftId = searchParams?.get('shiftId');
+    if (searchShiftId) return searchShiftId;
+    
+    // Finally try localStorage (if available)
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('currentShiftId') || null;
+    }
+    
+    return null;
+  });
 
   const [isShiftMenuOpen, setIsShiftMenuOpen] = useState(false);
+
+  // Fetch active shift if not available
+  useEffect(() => {
+    const fetchActiveShift = async () => {
+      if (!shiftId && userId && companyCode) {
+        try {
+          // Replace with your actual API endpoint
+          const response = await fetch(`/api/shifts/active?userId=${userId}&companyCode=${companyCode}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.shiftId) {
+              setShiftId(data.shiftId);
+              // Optionally store in localStorage for persistence
+              localStorage.setItem('currentShiftId', data.shiftId);
+            }
+          }
+        } catch (error) {
+          console.error('Failed to fetch active shift:', error);
+        }
+      }
+    };
+
+    fetchActiveShift();
+  }, [userId, companyCode, shiftId]);
 
   const NavigationLinks = [
     {
@@ -35,6 +81,8 @@ export default function AsideMenu() {
 
   const handleLogOut = () => {
     removeToken();
+    // Clear shift data on logout
+    localStorage.removeItem('currentShiftId');
     router.push("/login");
   };
 
@@ -45,6 +93,26 @@ export default function AsideMenu() {
       </div>
     );
   }
+
+  // Debug logging (remove in production)
+  console.log('Debug Info:', { userId, companyCode, shiftId, user });
+
+  // Helper function to check if a path is active, ignoring dynamic params
+  const isShiftActive = () => {
+    if (!pathname) return false;
+
+    if (pathname.includes("/dashboard/shift/shift-sales-summary")) {
+      return false;
+    }
+    if (pathname.includes("/dashboard/shift/shift-report")) {
+      return false;
+    }
+    if (pathname.includes("/dashboard/shift/previous-shifts")) {
+      return false;
+    }
+    // Active shift base route (excluding the above)
+    return pathname.includes("/dashboard/shift/");
+  };
 
   return (
     <nav className="w-full bg-[#1e1e1e] h-full py-8 flex flex-col justify-between">
@@ -104,11 +172,11 @@ export default function AsideMenu() {
                     <Link
                       href={
                         companyCode && userId
-                          ? `/dashboard/shift/activeshift/${companyCode}/${userId}`
+                          ? `/dashboard/shift/${companyCode}/${userId}`
                           : "#"
                       }
                       className={`block px-4 py-2 rounded-md ${
-                        pathname.startsWith("/dashboard/shift/activeshift")
+                        isShiftActive()
                           ? "bg-blue-600 text-white"
                           : "hover:bg-[#2d2d2d]"
                       } ${
@@ -118,6 +186,7 @@ export default function AsideMenu() {
                       }`}
                     >
                       Active Shift
+                      {!userId && <span className="text-xs"> (No User ID)</span>}
                     </Link>
                   </li>
 
@@ -129,9 +198,7 @@ export default function AsideMenu() {
                           : "#"
                       }
                       className={`block px-4 py-2 rounded-md ${
-                        pathname.startsWith(
-                          `/dashboard/shift/previous-shifts/${companyCode}/${userId}`
-                        )
+                        pathname.includes("/shift/previous-shifts")
                           ? "bg-blue-600 text-white"
                           : "hover:bg-[#2d2d2d]"
                       } ${
@@ -152,9 +219,7 @@ export default function AsideMenu() {
                           : "#"
                       }
                       className={`block px-4 py-2 rounded-md ${
-                        pathname.startsWith(
-                          `/dashboard/shift/shift-sales-summary/${shiftId}`
-                        )
+                        pathname.includes("/shift/shift-sales-summary")
                           ? "bg-blue-600 text-white"
                           : "hover:bg-[#2d2d2d]"
                       } ${
@@ -164,6 +229,7 @@ export default function AsideMenu() {
                       }`}
                     >
                       Sales Summary
+                      {!shiftId && <span className="text-xs"> (No Shift ID)</span>}
                     </Link>
                   </li>
 
@@ -175,9 +241,7 @@ export default function AsideMenu() {
                           : "#"
                       }
                       className={`block px-4 py-2 rounded-md ${
-                        pathname.startsWith(
-                          `/dashboard/shift/shift-report/${shiftId}`
-                        )
+                        pathname.includes("/shift/shift-report")
                           ? "bg-blue-600 text-white"
                           : "hover:bg-[#2d2d2d]"
                       } ${

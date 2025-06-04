@@ -1,99 +1,39 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { decodeJWT } from "@/lib/decodeJwt";
-import { ExportButton } from "@/(components)/common/exportButton";
-import { usePreviousShifts } from "@/lib/hooks/usePreviousShifts";
-import { PreviousShiftsResponse } from "@/lib/types/shift";
+import PreviousShiftsTable from "@/(components)/reports/previousShiftsTable";
+// import PreviousShiftsTable from "@/components/shifts/PreviousShiftsTable";
 
-export default function PreviousShiftPage() {
+export default function PreviousShiftsPage() {
+  const params = useParams();
   const user = decodeJWT();
 
-  const companyCode = user?.companyCode;
-  const userID = user?.userID;
+  // Extract parameters
+  const companyCode = params?.companyCode as string;
+  const userID =
+    (params?.userId as string) || user?.id || user?.userId || user?.sub;
 
-  console.log("decoded user", user);
-
-  const { data, isLoading, error } = usePreviousShifts(companyCode, userID);
-
-  const formatPastShiftDataForExport = (data: PreviousShiftsResponse) => {
-    return data.shiftList.map((shift) => ({
-      "Shift ID": shift.shiftID,
-      "Shift Start": new Date(shift.shiftStart).toLocaleString(),
-      "Shift End": shift.shiftEnd
-        ? new Date(shift.shiftEnd).toLocaleString()
-        : "Ongoing",
-      "Shift Status": shift.shiftStatus,
-      "User ID": data.userID,
-      "Company Code": data.companyCode,
-    }));
-  };
-
-  console.log("Previous Shifts Data:", data);
+  if (!companyCode || !userID) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg shadow-md text-center">
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            Missing Information
+          </h2>
+          <p className="text-gray-600">
+            Company code or user ID is required to view previous shifts.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <section className="w-full min-h-screen p-8 bg-gray-50">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <h2 className="text-2xl font-semibold text-gray-800">
-          Previous Shifts
-        </h2>
-
-        {isLoading ? (
-          <p className="text-gray-600 animate-pulse">
-            Fetching past timelines...
-          </p>
-        ) : error ? (
-          <p className="text-red-500">
-            Something went sideways. Try again later.
-          </p>
-        ) : data?.shiftList?.length === 0 ? (
-          <p className="text-gray-500">No previous shifts found.</p>
-        ) : (
-          <>
-            <ul className="space-y-4">
-              {data?.shiftList.map((shift) => (
-                <li
-                  key={shift.shiftID}
-                  className="p-4 bg-white shadow-md rounded-md flex justify-between items-start"
-                >
-                  <div>
-                    <p className="font-semibold text-lg">
-                      Shift ID: {shift.shiftID}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Start: {new Date(shift.shiftStart).toLocaleString()}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      End:{" "}
-                      {shift.shiftEnd
-                        ? new Date(shift.shiftEnd).toLocaleString()
-                        : "Still Open"}
-                    </p>
-                  </div>
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium mt-2 ${
-                      shift.shiftStatus === "OPEN"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-green-100 text-green-800"
-                    }`}
-                  >
-                    {shift.shiftStatus}
-                  </span>
-                </li>
-              ))}
-            </ul>
-
-            {data?.shiftList?.length > 0 && (
-              <div className="pt-4">
-                <ExportButton
-                  data={formatPastShiftDataForExport(data)}
-                  filename="Previous_Shifts"
-                  formatOptions={{ csv: true, pdf: true }}
-                />
-              </div>
-            )}
-          </>
-        )}
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <PreviousShiftsTable companyCode={companyCode} userID={userID} />
       </div>
-    </section>
+    </div>
   );
 }

@@ -1,10 +1,7 @@
 import { apiClient } from "../api/axios";
-import {
-  FullShiftData,
-  PreviousShiftsResponse,
-  ShiftReport,
-  ShiftSalesSummary,
-} from "../types/shift";
+import { FullShiftData, PreviousShiftsResponse } from "../types/shift";
+import { ShiftReport } from "../types/shiftReport";
+import { ShiftSalesSummary } from "../types/shiftSalesSummary";
 
 const getFullShiftData = async (
   shiftID: string,
