@@ -1,42 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { NextApiRequest } from "next";
+import { apiClient } from "@/lib/api/axios";
+import { ShiftSalesSummary } from "@/lib/types/shiftSalesSummary";
 
-export async function GET(
-  req: NextRequest,
-  context: { params: { shiftId: string; companyCode: string; userId: string } }
-) {
-  const { shiftId, companyCode, userId } = context.params;
+export async function GET(req: NextRequest) {
+  const companyCode = req.nextUrl.searchParams.get("companyCode");
+  const userID = req.nextUrl.searchParams.get("userID");
+  const shiftID = req.nextUrl.searchParams.get("shiftId");
+
+  const authHeader = req.headers.get("authorization");
   const BACKEND_URL = process.env.NEXT_API_BACKEND_URL;
-
-  if (!shiftId || !companyCode || !userId) {
+  if (!companyCode || !userID || !shiftID || !authHeader) {
     return NextResponse.json(
-      { message: "Missing required parameters" },
+      { error: "Missing params or auth" },
       { status: 400 }
     );
   }
-
   try {
-    const res = await fetch(
-      `${BACKEND_URL}/shift/shiftSalesSummary/${shiftId}/${companyCode}/${userId}`
+    const { data } = await apiClient.get<ShiftSalesSummary>(
+      `${BACKEND_URL}/shift/shiftSalesSummary/${shiftID}/${companyCode}/${userID}`,
+      {
+        headers: {
+          Authorization: authHeader,
+        },
+      }
     );
 
-    if (!res.ok) {
-      const errorText = await res.text();
-      return NextResponse.json(
-        {
-          message: `Upstream error: ${res.status} ${res.statusText}`,
-          details: errorText,
-        },
-        { status: res.status }
-      );
-    }
-
-    const data = await res.json();
     return NextResponse.json(data);
   } catch (error: any) {
+    console.error("Error fetching shift sales summary:", error);
     return NextResponse.json(
-      { message: error.message || "Failed to fetch shift sales summary" },
-      { status: 500 }
+      { error: "Failed to fetch shift sales summary" },
+      { status: error.response?.status || 500 }
     );
   }
 }

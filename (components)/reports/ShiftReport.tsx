@@ -212,6 +212,9 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
               </span>
             </div>
           </div>
+          <div>
+            <button>View SalesSummary</button>
+          </div>
         </section>
       </div>
     </div>

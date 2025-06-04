@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter, useParams, useSearchParams } from "next/navigation";
+import {
+  usePathname,
+  useRouter,
+  useParams,
+  useSearchParams,
+} from "next/navigation";
 import { useState, useEffect } from "react";
 import SkeletonLoader from "../common/skeleton";
 import { CalendarSync, LayoutDashboard, Warehouse } from "lucide-react";
@@ -15,54 +20,55 @@ export default function AsideMenu() {
   const searchParams = useSearchParams();
 
   const user = decodeJWT();
-  
+
   // Extract user ID from JWT token instead of URL params
   const userId = user?.id || user?.userId || user?.sub || null;
   const companyCode = params?.companyCode as string | null;
-  
+
   // Handle shift ID from multiple sources
   const [shiftId, setShiftId] = useState<string | null>(() => {
     // First try URL params
     const paramShiftId = params?.shiftId as string | null;
     if (paramShiftId) return paramShiftId;
-    
+
     // Then try search params
-    const searchShiftId = searchParams?.get('shiftId');
+    const searchShiftId = searchParams?.get("shiftId");
     if (searchShiftId) return searchShiftId;
-    
+
     // Finally try localStorage (if available)
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('currentShiftId') || null;
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("currentShiftId") || null;
     }
-    
+
     return null;
   });
 
   const [isShiftMenuOpen, setIsShiftMenuOpen] = useState(false);
 
-  // Fetch active shift if not available
-  useEffect(() => {
-    const fetchActiveShift = async () => {
-      if (!shiftId && userId && companyCode) {
-        try {
-          // Replace with your actual API endpoint
-          const response = await fetch(`/api/shifts/active?userId=${userId}&companyCode=${companyCode}`);
-          if (response.ok) {
-            const data = await response.json();
-            if (data.shiftId) {
-              setShiftId(data.shiftId);
-              // Optionally store in localStorage for persistence
-              localStorage.setItem('currentShiftId', data.shiftId);
-            }
-          }
-        } catch (error) {
-          console.error('Failed to fetch active shift:', error);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const fetchActiveShift = async () => {
+  //     if (!shiftId && userId && companyCode) {
+  //       try {
+  //         // Replace with your actual API endpoint
+  //         const response = await fetch(
+  //           `/api/shifts/active?userId=${userId}&companyCode=${companyCode}`
+  //         );
+  //         if (response.ok) {
+  //           const data = await response.json();
+  //           if (data.shiftId) {
+  //             setShiftId(data.shiftId);
 
-    fetchActiveShift();
-  }, [userId, companyCode, shiftId]);
+  //             localStorage.setItem("currentShiftId", data.shiftId);
+  //           }
+  //         }
+  //       } catch (error) {
+  //         console.error("Failed to fetch active shift:", error);
+  //       }
+  //     }
+  //   };
+
+  //   fetchActiveShift();
+  // }, [userId, companyCode, shiftId]);
 
   const NavigationLinks = [
     {
@@ -82,7 +88,7 @@ export default function AsideMenu() {
   const handleLogOut = () => {
     removeToken();
     // Clear shift data on logout
-    localStorage.removeItem('currentShiftId');
+    localStorage.removeItem("currentShiftId");
     router.push("/login");
   };
 
@@ -95,7 +101,7 @@ export default function AsideMenu() {
   }
 
   // Debug logging (remove in production)
-  console.log('Debug Info:', { userId, companyCode, shiftId, user });
+  console.log("Debug Info:", { userId, companyCode, shiftId, user });
 
   // Helper function to check if a path is active, ignoring dynamic params
   const isShiftActive = () => {
@@ -168,7 +174,7 @@ export default function AsideMenu() {
 
               {isShiftMenuOpen && (
                 <ul className="ml-8 mt-2 space-y-2 text-gray-400">
-                  <li>
+                  {/* <li className="">
                     <Link
                       href={
                         companyCode && userId
@@ -186,9 +192,11 @@ export default function AsideMenu() {
                       }`}
                     >
                       Active Shift
-                      {!userId && <span className="text-xs"> (No User ID)</span>}
+                      {!userId && (
+                        <span className="text-xs"> (No User ID)</span>
+                      )}
                     </Link>
-                  </li>
+                  </li> */}
 
                   <li>
                     <Link
@@ -229,7 +237,9 @@ export default function AsideMenu() {
                       }`}
                     >
                       Sales Summary
-                      {!shiftId && <span className="text-xs"> (No Shift ID)</span>}
+                      {!shiftId && (
+                        <span className="text-xs"> (No Shift ID)</span>
+                      )}
                     </Link>
                   </li>
 
