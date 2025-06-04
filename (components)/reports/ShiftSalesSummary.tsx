@@ -1,56 +1,19 @@
 "use client";
 
 import React from "react";
-import { useSalesSummary } from "@/lib/hooks/useShiftSalesSummary";
-import {
-  AlertCircle,
-  DollarSign,
-  TrendingDown,
-  TrendingUp,
-  Users,
-  Clock,
-  CreditCard,
-  Receipt,
-  MapPin,
-} from "lucide-react";
+import { AlertCircle } from "lucide-react";
 
 interface ShiftSalesSummaryProps {
-  shiftID: string;
-  companyCode: string;
-  userID: string;
+  summary: any;
 }
 
 export const ShiftSalesSummaryComponent: React.FC<ShiftSalesSummaryProps> = ({
-  shiftID,
-  companyCode,
-  userID,
+  summary,
 }) => {
-  const {
-    data: summary,
-    isLoading,
-    error,
-  } = useSalesSummary(shiftID, companyCode, userID);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700">
-        <AlertCircle size={20} />
-        Failed to load sales summary
-      </div>
-    );
-  }
-
   if (!summary) {
     return (
       <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg text-gray-600">
+        <AlertCircle size={20} className="inline mr-2" />
         No sales summary available for this shift.
       </div>
     );
@@ -62,165 +25,259 @@ export const ShiftSalesSummaryComponent: React.FC<ShiftSalesSummaryProps> = ({
       currency: "KES",
     }).format(amount);
 
-  const formatDateTime = (date: string) =>
-    new Date(date).toLocaleString("en-KE", {
-      dateStyle: "medium",
-      timeStyle: "short",
+  const formatDate = (date: string) =>
+    new Date(date).toLocaleDateString("en-KE", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     });
 
   return (
-    <div className="space-y-6">
-      {/* Summary Header */}
-      <div>
+    <div className="space-y-6 w-full h-auto  p-4">
+      {/* Header Section */}
+      <div className="">
         <h2 className="text-2xl font-bold text-gray-900">
-          Shift Sales Summary
+          Shift Summary Report
         </h2>
-        <p className="text-gray-600">{summary.reportType}</p>
-      </div>
-
-      {/* Sales Reps */}
-      <div>
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Users size={18} />
-          Sales Reps
-        </h3>
-        <ul className="mt-2 space-y-2">
-          {summary.salesRep.map((rep, i) => (
-            <li
-              key={i}
-              className="p-3 bg-gray-50 border rounded-md flex justify-between items-center"
-            >
-              <span className="font-medium">{rep.SalesRepName}</span>
-              <span className="text-sm text-gray-500 flex items-center gap-1">
-                <MapPin size={14} />
-                {rep.route}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Shift Details */}
-      <div>
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Clock size={18} />
-          Shift Details
-        </h3>
-        <div className="mt-2 space-y-2">
-          {summary.shiftDetails.map((shift, i) => (
-            <div key={i} className="border p-3 rounded-md bg-gray-50 space-y-1">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold">Shift #{shift.shiftID}</span>
-                <span className="text-sm text-blue-600">
-                  {shift.shiftStatus}
-                </span>
-              </div>
-              <div className="text-sm text-gray-600">
-                <p>Started: {formatDateTime(shift.shiftStart)}</p>
-                {shift.shiftEnd && (
-                  <p>Ended: {formatDateTime(shift.shiftEnd)}</p>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Financial Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-green-50 p-4 rounded-lg">
-          <div className="flex items-center gap-3">
-            <TrendingUp className="text-green-600" />
-            <div>
-              <p className="text-sm text-gray-600">Total Payments</p>
-              <p className="text-xl font-semibold text-green-700">
+        <table className=" bg-white min-w-full divide-y divide-gray-200 mt-2">
+          <tbody className="border-2 border-black">
+            <tr className="border-b-2 border-black">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r-2">
+                Route
+              </th>
+              <td className="px-6 py-3">
+                {summary.salesRep[0]?.route || "N/A"}
+              </td>
+            </tr>
+            <tr className="border-b-2 border-black">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r-2">
+                Salesman Name
+              </th>
+              <td className="px-6 py-3">
+                {summary.salesRep[0]?.SalesRepName || "N/A"}
+              </td>
+            </tr>
+            <tr className="border-b-2 border-black">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r-2">
+                Shift ID
+              </th>
+              <td className="px-6 py-3 ">
+                {summary.shiftDetails[0]?.shiftID || "N/A"}
+              </td>
+            </tr>
+            <tr className="border-b-2 border-black">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r-2">
+                Shift Status
+              </th>
+              <td className="px-6 py-3">
+                {summary.shiftDetails[0]?.shiftStatus || "N/A"}
+              </td>
+            </tr>
+            <tr className="border-b-2 border-black">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r-2">
+                Date
+              </th>
+              <td className="px-6 py-3">
+                {formatDate(summary.shiftDetails[0]?.shiftStart) || "N/A"}
+              </td>
+            </tr>
+            <tr className="border-b-2 border-black">
+              <th className="border-r-2 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Amount
+              </th>
+              <td className="px-6 py-3 text-right">
                 {formatCurrency(summary.totalPayments)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-red-50 p-4 rounded-lg">
-          <div className="flex items-center gap-3">
-            <TrendingDown className="text-red-600" />
-            <div>
-              <p className="text-sm text-gray-600">Total Expenses</p>
-              <p className="text-xl font-semibold text-red-700">
-                {formatCurrency(summary.totalExpense)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <div className="flex items-center gap-3">
-            <DollarSign className="text-blue-600" />
-            <div>
-              <p className="text-sm text-gray-600">Net Profit</p>
-              <p className="text-xl font-semibold text-blue-700">
+              </td>
+            </tr>
+            <tr>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 border-r-2 uppercase tracking-wider">
+                Net Sales
+              </th>
+              <td className="px-6 py-3 text-right">
                 {formatCurrency(summary.netProfit)}
-              </p>
-            </div>
-          </div>
-        </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      {/* Payments Received */}
-      <div>
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <CreditCard size={18} />
-          Payments Received ({summary.paymentsReceived.length})
+      {/* Expenses Section */}
+      <div className="w-full ">
+        <h3 className="text-start text-[24px] md:text-[32px] font-semibold mt-4">
+          Expenses
         </h3>
-        {summary.paymentsReceived.length ? (
-          <ul className="mt-2 space-y-2 max-h-64 overflow-y-auto">
-            {summary.paymentsReceived.map((payment, i) => (
-              <li
-                key={i}
-                className="p-3 border rounded-md flex justify-between items-start bg-white"
-              >
-                <div>
-                  <p className="font-medium">
+        {summary.expenseList.length > 0 ? (
+          <table className="text-center bg-white min-w-full divide-y divide-gray-200 mt-2">
+            <thead className="text-center w-full">
+              <tr className="border-2 border-black text-center">
+                <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r-2 border-black ">
+                  SN
+                </th>
+                <th className="border-r-2 border-black px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Expense Description
+                </th>
+                <th className=" px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Amount
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {summary.expenseList.map((expense: any, i: number) => (
+                <tr key={i} className="border-2 border-black">
+                  <td className="border-r-2 px-6 py-4 whitespace-nowrap">
+                    {i + 1}
+                  </td>
+                  <td className="border-r-2 px-6 py-4 whitespace-nowrap">
+                    {expense.expenseDescription}
+                  </td>
+                  <td className=" px-6 py-4 whitespace-nowrap text-sm text-red-600">
+                    -{formatCurrency(expense.expenseAmount)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot className="border-2 border-black">
+              <tr>
+                <td className="px-6 py-3 border-r-2" colSpan={2}>
+                  Total
+                </td>
+                <td className="px-6 py-3 text-sm font-medium text-red-600">
+                  -{formatCurrency(summary.totalExpense)}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        ) : (
+          <p className="text-gray-500 mt-2">No expenses recorded.</p>
+        )}
+      </div>
+
+      <div>
+        <h3 className="text-lg font-semibold mt-4 text-[24px] md:text-[32px]">
+          Payments Collected
+        </h3>
+        {summary.paymentsReceived.length > 0 ? (
+          <table className="bg-white min-w-full divide-y divide-gray-200 mt-2">
+            <thead>
+              <tr className="bg-gray-50 border-2 border-black">
+                <th className="px-6  py-3 bg-gray-50 border-r-2 border-black text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  SN
+                </th>
+                <th className=" border-r-2 border-black  px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Bank Deposited
+                </th>
+                <th className=" border-r-2 border-black  px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date of Transaction
+                </th>
+                <th className="border-r-2 border-black px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Ref no.
+                </th>
+                <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Amount
+                </th>
+              </tr>
+            </thead>
+            <tbody className=" divide-y divide-gray-200">
+              {summary.paymentsReceived.map((payment: any, i: number) => (
+                <tr
+                  key={i}
+                  className="border-b-2 border-black hover:bg-gray-50"
+                >
+                  <td className="px-6 py-4 border-l-2 border-r-2 border-black whitespace-nowrap">
+                    {i + 1}
+                  </td>
+                  <td className="px-6 py-4 border-r-2 border-black whitespace-nowrap">
+                    {payment.bank || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 border-r-2 border-black whitespace-nowrap">
+                    {payment.datepaid}
+                  </td>
+                  <td className="px-6 py-4 border-r-2 border-black whitespace-nowrap">
+                    {payment.chequeno || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 border-r-2 border-black whitespace-nowrap">
                     {formatCurrency(payment.amountpaid)}
-                  </p>
-                  <div className="text-sm text-gray-600">
-                    {payment.chequeno && <p>Cheque: {payment.chequeno}</p>}
-                    {payment.bank && <p>Bank: {payment.bank}</p>}
-                    {payment.paymentdesc && <p>{payment.paymentdesc}</p>}
-                  </div>
-                </div>
-                <span className="text-xs text-gray-500">
-                  {payment.datepaid}
-                </span>
-              </li>
-            ))}
-          </ul>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="border border-black">
+                <td className="px-6 py-3" colSpan={4}>
+                  Grand Total
+                </td>
+                <td className="border-l-2 border-black px-6 py-3 text-sm font-medium">
+                  {formatCurrency(summary.totalPayments)}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
         ) : (
           <p className="text-gray-500 mt-2">No payments recorded.</p>
         )}
       </div>
-
-      {/* Expenses */}
       <div>
-        <h3 className="text-lg font-semibold flex items-center gap-2">
-          <Receipt size={18} />
-          Expenses ({summary.expenseList.length})
+        <h3 className="text-lg font-semibold mt-4 text-[24px] md:text-[32px]">
+          Debtor Invoices{" "}
         </h3>
-        {summary.expenseList.length ? (
-          <ul className="mt-2 space-y-2 max-h-64 overflow-y-auto">
-            {summary.expenseList.map((expense, i) => (
-              <li
-                key={i}
-                className="p-3 border rounded-md flex justify-between bg-white"
-              >
-                <span>{expense.expenseDescription}</span>
-                <span className="text-red-600">
-                  -{formatCurrency(expense.expenseAmount)}
-                </span>
-              </li>
-            ))}
-          </ul>
+        {summary.paymentsReceived.length > 0 ? (
+          <table className="bg-white min-w-full divide-y divide-gray-200 mt-2">
+            <thead>
+              <tr className="bg-gray-50 border-2 border-black">
+                <th className="px-6  py-3 bg-gray-50 border-r-2 border-black text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  SN
+                </th>
+                <th className=" border-r-2 border-black  px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Customer Name
+                </th>
+                <th className=" border-r-2 border-black  px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Reference
+                </th>
+                <th className="border-r-2 border-black px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Transaction Date
+                </th>
+                <th className="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Balance
+                </th>
+              </tr>
+            </thead>
+            <tbody className=" divide-y divide-gray-200">
+              {summary.debtors.map((debtor: any, i: number) => (
+                <tr
+                  key={i}
+                  className="border-b-2 border-black hover:bg-gray-50"
+                >
+                  <td className="px-6 py-4 border-l-2 border-r-2 border-black whitespace-nowrap">
+                    {i + 1}
+                  </td>
+                  <td className="px-6 py-4 border-r-2 border-black whitespace-nowrap">
+                    {debtor.custname || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 border-r-2 border-black whitespace-nowrap">
+                    {debtor.custCode || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 border-r-2 border-black whitespace-nowrap">
+                    {formatDate(debtor.VSTDateTime) || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 border-r-2 border-black whitespace-nowrap">
+                    {formatCurrency(debtor.totalAmount)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="border border-black">
+                <td className="px-6 py-3" colSpan={4}>
+                  Grand Total
+                </td>
+                <td className="border-l-2 border-black px-6 py-3 text-sm font-medium">
+                  {formatCurrency(summary.totalPayments)}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
         ) : (
-          <p className="text-gray-500 mt-2">No expenses recorded.</p>
+          <p className="text-gray-500 mt-2">No payments recorded.</p>
         )}
       </div>
     </div>

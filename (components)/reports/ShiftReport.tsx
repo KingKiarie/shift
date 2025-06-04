@@ -2,6 +2,7 @@
 import React from "react";
 import { useShiftReport } from "@/lib/hooks/useShiftReport";
 import type { ShiftReport } from "@/lib/types/shiftReport";
+import { ExportButton } from "../common/exportButton";
 
 interface ShiftReportComponentProps {
   shiftID: string;
@@ -61,7 +62,7 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
   };
 
   return (
-    <div className="p-6 bg-white rounded-lg shadow-lg">
+    <div className="p-4 bg-white rounded-lg shadow-lg w-full">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900">
           {shiftReport.reportname}
@@ -70,9 +71,13 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
       </div>
 
       <section className="mb-8">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">
-          Report Details
-        </h3>
+        <div className="py-4 flex items-start justify-between">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">
+            Report Details
+          </h3>
+
+          <div></div>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm border border-gray-200 rounded-lg">
             <thead className="bg-gray-50">
