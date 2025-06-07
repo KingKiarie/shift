@@ -2,7 +2,6 @@
 import React from "react";
 import { useShiftReport } from "@/lib/hooks/useShiftReport";
 import type { ShiftReport } from "@/lib/types/shiftReport";
-import { ExportButton } from "../common/exportButton";
 
 interface ShiftReportComponentProps {
   shiftID: string;
@@ -151,7 +150,7 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
         </div>
       </section>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-1 gap-6">
         <section className="bg-gray-50 p-4 rounded-lg">
           <h3 className="text-lg font-semibold text-gray-800 mb-3">
             Grand Totals

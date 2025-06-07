@@ -47,7 +47,7 @@ export default function WarehouseReport() {
 
   if (isLoading) {
     return (
-      <section>
+      <section className="w-full h-screen">
         <div className="max-w-[90%] mx-auto">
           <div className="flex items-center justify-center py-20">
             <div className="text-lg">Loading warehouse data...</div>
@@ -59,8 +59,8 @@ export default function WarehouseReport() {
 
   if (error) {
     return (
-      <section>
-        <div className="max-w-[90%] mx-auto">
+      <section className="w-full h-screen">
+        <div className="max-w-[90%] mx-auto h-screen">
           <div className="flex items-center justify-center py-20">
             <div className="text-lg text-red-600">
               Error loading warehouse data
@@ -72,8 +72,8 @@ export default function WarehouseReport() {
   }
 
   return (
-    <section>
-      <div className="max-w-[90%] mx-auto">
+    <section className="h-auto w-full">
+      <div className="max-w-[90%] mx-auto h-auto">
         <div className="flex flex-col lg:flex-row items-center justify-between py-2">
           <h2 className="text-[16px] lg:text-[20px] font-bold mb-4">
             Warehouse Report for {user?.companyCode}

@@ -1,5 +1,4 @@
 import { apiClient } from "./axios";
-import { PreviousShiftsResponse } from "../types/shift";
 import { ShiftReportItem } from "../types/shiftReport";
 import { ShiftSalesSummary } from "../types/shiftSalesSummary";
 

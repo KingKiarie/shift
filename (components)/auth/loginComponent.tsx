@@ -82,17 +82,16 @@ export default function LoginComponent() {
       <div className="w-full flex flex-col md:flex-row lg:flex-row gap-4">
         <div
           className="relative w-full h-[50vh] lg:h-screen bg-cover bg-center flex flex-col items-center justify-center"
-          style={{ backgroundImage: "url('/login.jpg')" }}
+          style={{ backgroundImage: "url('/login.jpeg')" }}
         >
           <div className="w-full h-auto lg:h-screen absolute bg-black/60 hover:bg-black/30 duration-300 ease-in"></div>
           <div className="h-full w-full max-w-[90%] items-center justify-center flex flex-col space-y-4 z-40">
             <h1 className="text-[32px] lg:text-[56px] text-center text-white font-bold">
               Get informed with our{" "}
               <span className="text-red-500">Prime Mattress</span>{" "}
-              <span className="text-blue-500">Shift</span>
             </h1>
             <p className="text-white text-[18px] md:text-[20px] font-medium">
-              Learn · Explore · Get Analytics
+              Track · Explore · Get reports
             </p>
           </div>
         </div>
