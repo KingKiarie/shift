@@ -1,67 +1,72 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-// 🖨️ Export to PDF (Black & White)
-export const exportToPdf = async (
-  elementId: string,
-  fileName = "export.pdf"
-) => {
-  const input = document.getElementById(elementId);
-  if (!input) return console.error("Element not found");
+export const exportToPDF = async (elementId: string, fileName: string) => {
+  const element = document.getElementById(elementId);
+  if (!element) {
+    console.error("Element not found");
+    return;
+  }
 
-  // Clone target element to preserve original styles
-  const clone = input.cloneNode(true) as HTMLElement;
+  try {
+    // Create a style element to override Tailwind's oklch colors
+    const style = document.createElement("style");
+    style.textContent = `
+      #${elementId}, #${elementId} * {
+        --tw-bg-opacity: 1 !important;
+        --tw-text-opacity: 1 !important;
+        --tw-border-opacity: 1 !important;
+        color: #000000 !important; /* Black text */
+        background-color: #FFFFFF !important; /* White background */
+        border-color: #000000 !important; /* Black borders */
+      }
+      #${elementId} [class*="bg-black-"] {
+        background-color: #E5E5E5\ !important; /* Light gray for bg-gray-* */
+      }
+      #${elementId} [class*="border-gray-"] {
+        border-color: #C9ADA7 !important; /* Medium gray for border-gray-* */
+      }
+      #${elementId} [class*="text-gray-"] {
+        color: #00000 !important; /* Dark gray for text-gray-* */
+      }
+      #${elementId} [class*="bg-"], #${elementId} [class*="text-"], #${elementId} [class*="border-"] {
+        color: #000000 !important; /* Fallback to black for other colors */
+        background-color: #FFFFFF !important; /* Fallback to white */
+        border-color: #000000 !important; /* Fallback to black */
+      }
+    `;
+    document.head.appendChild(style);
 
-  // Apply black & white styles to clone
-  clone.style.filter = "grayscale(100%) contrast(150%)";
-  clone.style.color = "black";
-  clone.style.backgroundColor = "white";
-  clone.style.borderColor = "black";
+    // Capture the element with html2canvas
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+    });
 
-  // Apply B&W styles recursively
-  clone.querySelectorAll("*").forEach((el) => {
-    const element = el as HTMLElement;
-    element.style.color = "black";
-    element.style.backgroundColor = "white";
-    element.style.borderColor = "black";
-  });
+    // Remove the temporary style element
+    document.head.removeChild(style);
 
-  clone.style.position = "fixed";
-  clone.style.top = "-10000px";
-  document.body.appendChild(clone);
+    // Generate PDF
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+    const imgWidth = 210; // A4 width in mm
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    let heightLeft = imgHeight;
+    let position = 0;
 
-  const canvas = await html2canvas(clone);
-  const imgData = canvas.toDataURL("image/png");
-  const pdf = new jsPDF();
+    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+    heightLeft -= 297; // A4 height in mm
 
-  const imgProps = pdf.getImageProperties(imgData);
-  const pdfWidth = pdf.internal.pageSize.getWidth();
-  const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();C9ADA7
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);C9ADA7
+      heightLeft -= 297;
+    }
 
-  pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-  pdf.save(fileName);
-
-  document.body.removeChild(clone);
-};
-
-export const exportCSV = (data: object[], filename = "export.csv") => {
-  if (!data || !data.length)
-    return console.error("No data provided for CSV export");
-
-  const keys = Object.keys(data[0]);
-  const csvRows = [
-    keys.join(","), // header row
-    ...data.map((row) =>
-      keys.map((k) => `"${(row as any)[k] ?? ""}"`).join(",")
-    ),
-  ];
-  const csvString = csvRows.join("\n");
-
-  const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.setAttribute("download", filename);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+    pdf.save(fileName);
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+  }
 };

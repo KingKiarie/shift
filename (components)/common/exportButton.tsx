@@ -1,50 +1,56 @@
-import { exportCSV, exportToPdf } from "@/app/utils/exportPdf";
-import { useState } from "react";
+"use client";
 
-type ExportButtonProps = {
-  csvData: object[];
-  pdfELementId: string;
-};
+import React from "react";
+import { ShiftSalesSummary } from "@/lib/types/shiftSalesSummary";
+import { exportToPDF } from "@/app/utils/exportPdf";
+import { Download } from "lucide-react";
+
+interface ExportButtonProps {
+  summaryData: ShiftSalesSummary;
+  pdfElementId: string;
+  exportTitle: string;
+  fileName: string;
+  showDropdown?: boolean;
+}
 
 export const ExportButton: React.FC<ExportButtonProps> = ({
-  csvData,
-  pdfELementId,
+  pdfElementId,
+  fileName,
+  showDropdown = false,
 }) => {
-  const [hovering, setHovering] = useState(false);
-
-  const handleExport = (type: "pdf" | "csv") => {
-    if (type === "pdf") exportToPdf(pdfELementId);
-    else exportCSV(csvData);
-    setHovering(false);
+  const handleExportPDF = () => {
+    exportToPDF(pdfElementId, `${fileName}.pdf`);
   };
 
   return (
-    <>
-      <div
-        className="relative inline-block text-left"
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={() => setHovering(false)}
-      >
-        <button className="bg-[#1e1e1e] hover:bg-amber-300 text-white px-4 py-2 rounded  transition-all duration-300 ease-in ">
-          Export
-        </button>
-        {hovering && (
-          <div className="absolute mt-2 top-4 bg-white border rounded shadow-md z-10 w-28">
+    <div className="relative">
+      {showDropdown ? (
+        <div className="group">
+          <button
+            className="bg-gray-800 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-gray-700"
+            onClick={handleExportPDF}
+          >
+            <Download size={16} />
+            Export
+          </button>
+          <div className="absolute hidden group-hover:block bg-white shadow-lg rounded mt-1">
             <button
-              onClick={() => handleExport("pdf")}
-              className="block px-4 py-2 w-full text-left text-[10px] hover:bg-gray-100"
+              className="block w-full text-left px-4 py-2 text-sm text-gray-800 hover:bg-gray-200"
+              onClick={handleExportPDF}
             >
               Export as PDF
             </button>
-            <button
-              onClick={() => handleExport("csv")}
-              className="block px-4 py-2 w-full text-left hover:bg-gray-100 text-[10px]"
-            >
-              Export as CSV
-            </button>
           </div>
-        )}
-      </div>
-    </>
+        </div>
+      ) : (
+        <button
+          className="bg-gray-800 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-gray-700"
+          onClick={handleExportPDF}
+        >
+          <Download size={16} />
+          Export to PDF
+        </button>
+      )}
+    </div>
   );
 };

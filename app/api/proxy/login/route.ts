@@ -4,7 +4,15 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const apiRes = await fetch("http://102.130.119.149:3000/auth/login", {
+    if (!body.username || !body.password) {
+      return NextResponse.json(
+        { error: "Username and password are required" },
+        { status: 400 }
+      );
+    }
+    const BACKEND_URL = process.env.NEXT_API_BACKEND_URL;
+
+    const apiRes = await fetch(`${BACKEND_URL}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -12,23 +20,29 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify(body),
     });
 
-    const text = await apiRes.text(); 
+    const contentType = apiRes.headers.get("content-type");
+    const isJSON = contentType?.includes("application/json");
 
-    console.log("API Response Status:", apiRes.status);
-    console.log("API Response Body:", text);
-
-    try {
-      const data = JSON.parse(text);
-      return NextResponse.json(data, { status: apiRes.status });
-    } catch {
-      return new NextResponse(text, {
-        status: apiRes.status,
-        headers: { "Content-Type": "text/plain" },
-      });
+    if (!apiRes.ok) {
+      const errorData = isJSON ? await apiRes.json() : await apiRes.text();
+      return NextResponse.json(
+        { error: errorData.message || "Authentication failed" },
+        { status: apiRes.status }
+      );
     }
+
+    const data = isJSON ? await apiRes.json() : await apiRes.text();
+
+    return NextResponse.json(data, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   } catch (err: any) {
+    console.error("Proxy error:", err);
     return NextResponse.json(
-      { error: err.message || "Something went wrong" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

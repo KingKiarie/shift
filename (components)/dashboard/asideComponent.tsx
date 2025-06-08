@@ -1,124 +1,229 @@
 "use client";
-import { useRouter, usePathname } from "next/navigation";
-import Link from "next/link";
-import { useState, useEffect, useMemo, JSX } from "react";
-import SkeletonLoader from "../common/skeleton";
-import { CalendarSync, LayoutDashboard, Warehouse } from "lucide-react";
-import { removeToken } from "@/lib/token";
 
-type NavLink = {
-  name: string;
-  slug: string;
-  icon: JSX.Element;
-};
+import Link from "next/link";
+import {
+  usePathname,
+  useRouter,
+  useParams,
+  useSearchParams,
+} from "next/navigation";
+import { useState, useEffect } from "react";
+import {
+  CalendarSync,
+  LayoutDashboard,
+  Users,
+  Warehouse,
+  Menu,
+  X,
+} from "lucide-react";
+import { removeToken } from "@/lib/token";
+import { decodeJWT } from "@/lib/decodeJwt";
+import SkeletonLoader from "../common/skeleton";
 
 export default function AsideMenu() {
   const router = useRouter();
+  const pathname = usePathname();
+  const params = useParams();
+  const searchParams = useSearchParams();
 
-  const [clientPathname, setClientPathname] = useState<string | null>(null);
+  const user = decodeJWT();
+  const userId = user?.id || user?.userId || user?.sub || null;
+  const companyCode = params?.companyCode as string | null;
 
-  useEffect(() => {
-    setClientPathname(window.location.pathname);
-  }, []);
+  const [shiftId, setShiftId] = useState<string | null>(() => {
+    const paramShiftId = params?.shiftId as string | null;
+    if (paramShiftId) return paramShiftId;
+    const searchShiftId = searchParams?.get("shiftId");
+    if (searchShiftId) return searchShiftId;
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("currentShiftId") || null;
+    }
+    return null;
+  });
 
-  const companyCode = useMemo(() => {
-    if (!clientPathname) return null;
-    const parts = clientPathname.split("/").filter(Boolean);
-    return parts.at(-1);
-  }, [clientPathname]);
+  const [isShiftMenuOpen, setIsShiftMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const NavigationLinks = [
+    {
+      name: "Dashboard",
+      slug: companyCode ? `/dashboard/${companyCode}` : "/dashboard",
+      icon: <LayoutDashboard className="w-6 h-6" />,
+    },
+    {
+      name: "Warehouse Report",
+      slug: companyCode
+        ? `/dashboard/warehousereport/${companyCode}`
+        : "/dashboard/warehousereport",
+      icon: <Warehouse className="w-6 h-6" />,
+    },
+    {
+      name: "Users",
+      slug: companyCode
+        ? `/dashboard/user/get-users/${companyCode}`
+        : "/dashboard/user/get-users",
+      icon: <Users className="w-6 h-6" />,
+    },
+  ];
 
   const handleLogOut = () => {
     removeToken();
+    localStorage.removeItem("currentShiftId");
     router.push("/login");
   };
 
-  const NavigationLinks: NavLink[] = useMemo(
-    () => [
-      {
-        name: "Dashboard",
-        slug: "",
-        icon: <LayoutDashboard className="w-8 h-8" />,
-      },
-      {
-        name: "Warehouse Report",
-        slug: "warehousereport",
-        icon: <Warehouse className="w-8 h-8" />,
-      },
-      {
-        name: "Shift Report",
-        slug: "shiftreport",
-        icon: <CalendarSync className="w-8 h-8" />,
-      },
-    ],
-    []
-  );
+  const isShiftActive = () => {
+    if (!pathname) return false;
+    if (pathname.includes("/dashboard/shift/shift-sales-summary")) return false;
+    if (pathname.includes("/dashboard/shift/shift-report")) return false;
+    if (pathname.includes("/dashboard/shift/previous-shifts")) return false;
+    return pathname.includes("/dashboard/shift/");
+  };
 
-  if (!companyCode) {
-    return (
-      <div className="w-full h-screen">
-        <SkeletonLoader />
-      </div>
-    );
-  }
-
-  return (
-    <nav className="w-full bg-[#1e1e1e] h-[100%] py-8 items-start justify-between">
-      <aside className="px-4 flex flex-col items-start justify-between space-y-4 h-[100%]">
-        <div className="w-full space-y-8">
-          <div className="bg-red-500 p-2 rounded-md flex flex-row space-x-4">
-            <div className="bg-white rounded-md">
-              <img
-                src="/prime-foam.png"
-                alt=""
-                className="w-20 h-10 object-cover"
-              />
-            </div>
-            <h1 className="font-prim text-[24px] md:text-[32px] font-bold text-white">
-              Prime Mattress
-            </h1>
-          </div>
-          <div className="w-full">
-            <ul className="w-full space-y-4">
-              {NavigationLinks.map(({ name, slug, icon }) => {
-                const fullPath = `/dashboard${
-                  slug ? `/${slug}` : ""
-                }/${companyCode}`;
-                const isActive =
-                  clientPathname === fullPath ||
-                  (clientPathname && clientPathname.startsWith(fullPath));
-
-                return (
-                  <li
-                    key={name}
-                    className="text-[14px] md:text-[16px] lg:text-[18px] font-bold text-white"
+  const MenuContent = () => (
+    <aside className="w-full h-auto bg-[#1e1e1e] text-white flex flex-col justify-between p-4">
+      <div className="flex flex-col w-full h-[100%] items-start justify-between">
+        <div className="flex items-center justify-center bg-red-500 p-2 rounded-md w-full">
+          {/* <img
+            src="/prime-foam.png"
+            alt="Logo"
+            className="w-20 h-10 object-cover bg-white rounded-md"
+          /> */}
+          <h1 className="text-[20px] text-center font-bold">Prime Mattress</h1>
+        </div>
+        <div className="w-full">
+          <ul className="mt-8 space-y-4">
+            {NavigationLinks.map(({ name, slug, icon }) => {
+              const isActive = pathname === slug;
+              return (
+                <li key={name}>
+                  <Link
+                    href={slug}
+                    className={`flex items-center space-x-3 px-4 py-2 rounded-md ${
+                      isActive
+                        ? "bg-blue-600 text-white"
+                        : "text-gray-400 hover:bg-[#353238]"
+                    }`}
                   >
+                    {icon}
+                    <span>{name}</span>
+                  </Link>
+                </li>
+              );
+            })}
+
+            <li>
+              <button
+                onClick={() => setIsShiftMenuOpen((prev) => !prev)}
+                className="flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-[#353238] font-semibold"
+              >
+                <div className="flex items-center space-x-3">
+                  <CalendarSync className="w-6 h-6" />
+                  <span>View Shifts</span>
+                </div>
+                <span>{isShiftMenuOpen ? "−" : "+"}</span>
+              </button>
+
+              {isShiftMenuOpen && (
+                <ul className="ml-6 mt-2 space-y-2 text-sm text-gray-300">
+                  <li>
                     <Link
-                      href={fullPath}
-                      className={`space-x-4 cursor-pointer rounded-md w-full transition-all ease-in duration-200 flex items-center justify-between px-4 py-2 md:px-6 md:py-3 lg:py-4 lg:px-8 text-white ${
-                        isActive
-                          ? "bg-blue-600 text-white font-bold"
-                          : "bg-[#1e1e1e] text-gray-400 hover:bg-[#353238]/40"
+                      href={
+                        companyCode && userId
+                          ? `/dashboard/shift/previous-shifts/${companyCode}/${userId}`
+                          : "#"
+                      }
+                      className={`block px-3 py-1 rounded-md ${
+                        pathname.includes("/shift/previous-shifts")
+                          ? "bg-blue-600 text-white"
+                          : "hover:bg-[#2d2d2d]"
                       }`}
                     >
-                      <span>{icon}</span>
-                      <p className="w-full">{name}</p>
+                      Previous Shifts
                     </Link>
                   </li>
-                );
-              })}
-            </ul>
-          </div>
+                  <li>
+                    <Link
+                      href={
+                        shiftId && companyCode && userId
+                          ? `/dashboard/shift/shift-sales-summary/${shiftId}/${companyCode}/${userId}`
+                          : "#"
+                      }
+                      className={`block px-3 py-1 rounded-md ${
+                        pathname.includes("/shift/shift-sales-summary")
+                          ? "bg-blue-600 text-white"
+                          : "hover:bg-[#2d2d2d]"
+                      }`}
+                    >
+                      Sales Summary
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href={
+                        shiftId && companyCode && userId
+                          ? `/dashboard/shift/shift-report/${shiftId}/${companyCode}/${userId}`
+                          : "#"
+                      }
+                      className={`block px-3 py-1 rounded-md ${
+                        pathname.includes("/shift/shift-report")
+                          ? "bg-blue-600 text-white"
+                          : "hover:bg-[#2d2d2d]"
+                      }`}
+                    >
+                      Shift Report
+                    </Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+          </ul>
         </div>
+      </div>
 
-        <div className="w-full">
-          <button
-            className="w-full bg-red-500 text-white font-bold hover:bg-red-400 transition-colors ease-in duration-300 cursor-pointer px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4"
-            onClick={handleLogOut}
-          >
-            Logout
-          </button>
+      <button
+        onClick={handleLogOut}
+        className="w-full mt-8 bg-red-500 hover:bg-red-400 py-2 rounded-md text-white font-bold"
+      >
+        Logout
+      </button>
+    </aside>
+  );
+
+  return (
+    <>
+      <div className="block  lg:hidden fixed  top-4 right-4  z-50">
+        <button
+          onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+          className="bg-[#1e1e1e] p-2 rounded-md text-white"
+        >
+          {isMobileMenuOpen ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <Menu className="w-6 h-6" />
+          )}
+        </button>
+      </div>
+
+      <div
+        className={`fixed  inset-0 z-40 transition-all duration-300 ease-in-out lg:hidden ${
+          isMobileMenuOpen
+            ? "translate-x-0 opacity-100"
+            : "-translate-x-full opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className="absolute top-0 left-0 h-full w-4/5  z-50 shadow-lg">
+          {MenuContent()}
         </div>
-      </aside>
-    </nav>
+        <div
+          className="absolute inset-0"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      </div>
+
+      <div className="hidden md:hidden lg:block h-[100%]  w-full ">
+        {MenuContent()}
+      </div>
+    </>
   );
 }

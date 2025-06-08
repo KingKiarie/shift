@@ -17,23 +17,22 @@ export type TokenPayload = {
 };
 
 export function decodeJWT(token?: string): TokenPayload | null {
-  const localToken = getToken();
+  const localToken = token ?? getToken();
 
-  if (!localToken) {
-    return null;
-  }
+  if (!localToken) return null;
 
   try {
     const decoded = jwtDecode<TokenPayload>(localToken);
     const now = Date.now() / 1000;
 
     if (decoded.exp && decoded.exp < now) {
-      console.warn("JWT Expired");
+      console.warn("JWT expired");
       return null;
     }
+
     return decoded;
   } catch (error) {
-    console.error("failed to Decode token", error);
+    console.error("Failed to decode token", error);
     return null;
   }
 }

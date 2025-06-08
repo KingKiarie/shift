@@ -13,10 +13,9 @@ export default function SignupComponent() {
             <h1 className="text-[32px] lg:text-[56px] text-center text-white font-bold">
               Get Informations from{" "}
               <span className="text-red-500">Prime Mattress</span>{" "}
-              <span className="text-blue-500">Shift</span>
             </h1>
             <p className="text-white text-[18px] md:text-[20px] font-medium">
-              Trust · Explore · get analytics
+              Trust · Track · Get reports
             </p>
           </div>
         </div>

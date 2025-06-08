@@ -3,36 +3,32 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const companyCode = searchParams.get("companyCode");
+  const BACKEND_URL = process.env.NEXT_API_BACKEND_URL;
 
   if (!companyCode) {
     return NextResponse.json(
-      { error: "Missing companyCode in query parameters" },
+      { message: "Missing companyCode in query parameters" },
       { status: 400 }
     );
   }
 
   try {
-    const backendRes = await fetch(
-      `http://102.130.119.149:3000/warehouse/${companyCode}`
-    );
+    const backendRes = await fetch(`${BACKEND_URL}/warehouse/${companyCode}`);
 
-    const text = await backendRes.text();
+    const contentType = backendRes.headers.get("content-type");
+    const isJSON = contentType?.includes("application/json");
 
-    console.log("Warehouse API Status:", backendRes.status);
-    console.log("Warehouse API Body:", text);
+    const data = isJSON ? await backendRes.json() : await backendRes.text();
 
-    try {
-      const data = JSON.parse(text);
-      return NextResponse.json(data, { status: backendRes.status });
-    } catch {
-      return new NextResponse(text, {
-        status: backendRes.status,
-        headers: { "Content-Type": "text/plain" },
-      });
-    }
+    return new NextResponse(isJSON ? JSON.stringify(data) : data, {
+      status: backendRes.status,
+      headers: {
+        "Content-Type": isJSON ? "application/json" : "text/plain",
+      },
+    });
   } catch (err: any) {
     return NextResponse.json(
-      { error: err.message || "Failed to fetch warehouse data" },
+      { message: err.message || "Failed to fetch warehouse data" },
       { status: 500 }
     );
   }
