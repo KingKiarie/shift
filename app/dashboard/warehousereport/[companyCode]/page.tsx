@@ -358,12 +358,12 @@ export default function WarehouseReport() {
         )}
 
         <div className="bg-gray-50 rounded-lg p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm place-items-center">
-            <div>
+          <div className="flex items-center justify-center w-full">
+            <div className="hidden">
               <span className="font-semibold">Company:</span>{" "}
               {user?.companyCode}
             </div>
-            <div>
+            <div className="hidden">
               <span className="font-semibold">Total Warehouses:</span>{" "}
               {warehouses.length}
             </div>
