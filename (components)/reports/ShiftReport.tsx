@@ -53,7 +53,7 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
     const numValue = typeof value === "string" ? parseFloat(value) : value;
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "KES",
     }).format(numValue || 0);
   };
 
@@ -150,7 +150,7 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
                     {formatCurrency(item.avgPrice)}
                   </td>
                   <td className="border-b border-gray-100 px-4 py-3 text-right">
-                    {formatCurrency(item.stdCost)}
+                    {formatCurrency(item.stdCost * item.qtySold)}
                   </td>
                   <td className="border-b border-gray-100 px-4 py-3 text-right">
                     {formatCurrency(item.margin)}
@@ -171,31 +171,49 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
             <div className="flex justify-between">
               <span className="text-gray-600">Qty Taken:</span>
               <span className="font-medium">
-                {formatNumber(shiftReport.grandTotals.qtyTaken)}
+                {formatNumber(
+                  shiftReport.reportDetails.reduce(
+                    (total, item) => total + Number(item.qtyTaken),
+                    0
+                  )
+                )}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Qty Returned:</span>
               <span className="font-medium">
-                {shiftReport.grandTotals.qtyReturned}
+                {formatNumber(
+                  shiftReport.reportDetails.reduce(
+                    (total, item) => total + Number(item.qtyReturned),
+                    0
+                  )
+                )}{" "}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Qty Sold:</span>
               <span className="font-medium">
-                {formatNumber(shiftReport.grandTotals.qtySold)}
+                {formatNumber(
+                  shiftReport.reportDetails.reduce(
+                    (total, item) => total + Number(item.qtySold),
+                    0
+                  )
+                )}{" "}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Total Sale:</span>
               <span className="font-medium">
-                {formatCurrency(shiftReport.grandTotals.totalSale)}
+                {shiftReport.reportDetails.map((profit, idx) => {
+                  const profitValue = profit.totalSale;
+                  return <p key={idx}>{formatCurrency(profitValue)}</p>;
+                })}{" "}
               </span>
             </div>
             <div className="flex justify-between border-t pt-2">
               <span className="text-gray-600">Margin:</span>
               <span className="font-bold text-green-600">
-                {shiftReport.grandTotals.margin}
+                {shiftReport.reportDetails.margin}
               </span>
             </div>
           </div>
@@ -209,7 +227,11 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
             <div className="flex justify-between">
               <span className="text-gray-600">Grand Profit:</span>
               <span className="font-bold text-green-600">
-                {formatCurrency(shiftReport.profitOverview.grandProfit)}
+                {shiftReport.reportDetails.map((profit, idx) => {
+                  const profitValue =
+                    profit.totalSale - profit.stdCost * profit.qtySold;
+                  return <p key={idx}>{formatCurrency(profitValue)}</p>;
+                })}
               </span>
             </div>
             <div className="flex justify-between">
@@ -221,10 +243,11 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
             <div className="flex justify-between border-t pt-2">
               <span className="text-gray-600">Net Profit:</span>
               <span className="font-bold text-blue-600">
-                {formatCurrency(
-                  shiftReport.profitOverview.grandProfit -
-                    shiftReport.profitOverview.shiftExpense
-                )}
+                {shiftReport.reportDetails.map((profit, idx) => {
+                  const profitValue =
+                    profit.totalSale - profit.stdCost * profit.qtySold;
+                  return <p key={idx}>{formatCurrency(profitValue)}</p>;
+                })}
               </span>
             </div>
           </div>

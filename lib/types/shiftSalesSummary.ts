@@ -17,7 +17,7 @@ export interface Expense {
 }
 
 export interface PaymentReceived {
-  datepaid: string; // YYYY-MM-DD
+  datepaid: string; 
   chequeno: string;
   amountpaid: number;
   bank: string;
@@ -28,7 +28,7 @@ export interface Debtor {
   custCode: string;
   custname: string;
   visitID: number;
-  VSTDateTime: string; // ISO Date string
+  VSTDateTime: string; 
   totalAmount: number;
 }
 

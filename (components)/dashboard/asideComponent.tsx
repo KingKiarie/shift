@@ -83,7 +83,7 @@ export default function AsideMenu() {
   const MenuContent = () => (
     <aside className="w-full h-auto bg-[#1e1e1e] text-white flex flex-col justify-between p-4">
       <div className="flex flex-col w-full h-[100%] items-start justify-between">
-        <div className="flex items-center justify-center bg-red-500 p-2 rounded-md w-full">
+        <div className="flex items-center justify-center bg-blue-700 p-2 rounded-md w-full">
           {/* <img
             src="/prime-foam.png"
             alt="Logo"

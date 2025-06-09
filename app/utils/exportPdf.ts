@@ -1,72 +1,170 @@
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import autoTable from "jspdf-autotable";
 
-export const exportToPDF = async (elementId: string, fileName: string) => {
-  const element = document.getElementById(elementId);
-  if (!element) {
-    console.error("Element not found");
-    return;
-  }
+const formatCurrency = (amount: number) =>
+  new Intl.NumberFormat("en-KE", {
+    style: "currency",
+    currency: "KES",
+  }).format(amount);
 
-  try {
-    // Create a style element to override Tailwind's oklch colors
-    const style = document.createElement("style");
-    style.textContent = `
-      #${elementId}, #${elementId} * {
-        --tw-bg-opacity: 1 !important;
-        --tw-text-opacity: 1 !important;
-        --tw-border-opacity: 1 !important;
-        color: #000000 !important; /* Black text */
-        background-color: #FFFFFF !important; /* White background */
-        border-color: #000000 !important; /* Black borders */
-      }
-      #${elementId} [class*="bg-black-"] {
-        background-color: #E5E5E5\ !important; /* Light gray for bg-gray-* */
-      }
-      #${elementId} [class*="border-gray-"] {
-        border-color: #C9ADA7 !important; /* Medium gray for border-gray-* */
-      }
-      #${elementId} [class*="text-gray-"] {
-        color: #00000 !important; /* Dark gray for text-gray-* */
-      }
-      #${elementId} [class*="bg-"], #${elementId} [class*="text-"], #${elementId} [class*="border-"] {
-        color: #000000 !important; /* Fallback to black for other colors */
-        background-color: #FFFFFF !important; /* Fallback to white */
-        border-color: #000000 !important; /* Fallback to black */
-      }
-    `;
-    document.head.appendChild(style);
+const formatDate = (date: string) =>
+  new Date(date).toLocaleDateString("en-KE", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
 
-    // Capture the element with html2canvas
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
+export const generateShiftReportPDF = (summary: any, fileName: string) => {
+  const doc = new jsPDF();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const leftX = 10;
+  const rightX = pageWidth - 70;
+  let y = 15;
+
+  // === Helpers
+  const centerTitle = (text: string, fontSize = 14) => {
+    doc.setFontSize(fontSize);
+    doc.setFont("helvetica", "bold");
+    doc.text(text, pageWidth / 2, y, { align: "center" });
+    y += 6;
+  };
+
+  const renderTable = (head: string[][], body: any[][]) => {
+    autoTable(doc, {
+      theme: "grid",
+      startY: y,
+      head,
+      body,
+      styles: {
+        fontSize: 10,
+        textColor: 0,
+        lineColor: 0,
+      },
+      headStyles: {
+        fillColor: [255, 255, 255],
+        textColor: 0,
+        fontStyle: "bold",
+        lineColor: 0,
+      },
+      didDrawPage: (data) => {
+        y = data.cursor.y + 10;
+      },
     });
+  };
 
-    // Remove the temporary style element
-    document.head.removeChild(style);
+  // === TITLE
+  centerTitle("Shift Summary Report");
+  centerTitle(`Route: ${summary.salesRep[0]?.route || "N/A"}`);
 
-    // Generate PDF
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
-    const imgWidth = 210; // A4 width in mm
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    let heightLeft = imgHeight;
-    let position = 0;
+  // === Divider Line
+  doc.setDrawColor(0);
+  doc.setLineWidth(0.5);
+  doc.line(leftX, y, pageWidth - leftX, y);
+  y += 6;
 
-    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-    heightLeft -= 297; // A4 height in mm
+  // === LEFT COLUMN
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  let leftY = y;
+  doc.text(
+    `Salesman Name: ${summary.salesRep[0]?.SalesRepName || "N/A"}`,
+    leftX,
+    leftY
+  );
+  leftY += 5;
+  doc.text(
+    `Shift ID: ${summary.shiftDetails[0]?.shiftID || "N/A"}`,
+    leftX,
+    leftY
+  );
+  leftY += 5;
+  doc.text(
+    `Shift Status: ${summary.shiftDetails[0]?.shiftStatus || "N/A"}`,
+    leftX,
+    leftY
+  );
 
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();C9ADA7
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);C9ADA7
-      heightLeft -= 297;
-    }
+  // === RIGHT COLUMN
+  let rightY = y;
+  doc.text(
+    `Date: ${formatDate(summary.shiftDetails[0]?.shiftStart)}`,
+    rightX,
+    rightY
+  );
+  rightY += 7;
 
-    pdf.save(fileName);
-  } catch (error) {
-    console.error("Error generating PDF:", error);
+  doc.setFont("helvetica", "bold");
+  doc.text("Amount", rightX, rightY);
+  rightY += 5;
+  doc.setFont("helvetica", "normal");
+  doc.text(`${formatCurrency(500)}`, rightX, rightY); // Replace with actual if available
+  rightY += 6;
+
+  doc.setFont("helvetica", "bold");
+  doc.text("Net Sales", rightX, rightY);
+  rightY += 5;
+  doc.setFont("helvetica", "normal");
+  doc.text(`${formatCurrency(summary.netProfit)}`, rightX, rightY);
+
+  // Update y to max height used
+  y = Math.max(leftY, rightY) + 10;
+
+  // === EXPENSES
+  centerTitle(" Expenses");
+  const expenseRows = summary.expenseList?.length
+    ? summary.expenseList.map((e: any, i: number) => [
+        `${i + 1}. ${e.expenseDescription}`,
+        `-${formatCurrency(e.expenseAmount)}`,
+      ])
+    : [["No expenses recorded.", ""]];
+
+  if (summary.expenseList?.length) {
+    expenseRows.push([
+      "Total Expenses",
+      `-${formatCurrency(summary.totalExpense)}`,
+    ]);
   }
+
+  renderTable([["Description", "Amount"]], expenseRows);
+
+  // === PAYMENTS
+  centerTitle(" Payments Collected");
+  const paymentRows = summary.paymentsReceived?.length
+    ? summary.paymentsReceived.map((p: any, i: number) => [
+        `${i + 1}. ${p.bank || "N/A"}`,
+        p.datepaid,
+        p.chequeno || "N/A",
+        formatCurrency(p.amountpaid),
+      ])
+    : [["No payments recorded.", "", "", ""]];
+
+  if (summary.paymentsReceived?.length) {
+    paymentRows.push(["", "", "Total", formatCurrency(summary.totalPayments)]);
+  }
+
+  renderTable([["Bank", "Date", "Ref", "Amount"]], paymentRows);
+
+  // === DEBTORS
+  centerTitle("Debtor Invoices");
+  const debtorRows = summary.debtors?.length
+    ? summary.debtors.map((d: any, i: number) => [
+        `${i + 1}. ${d.custname}`,
+        d.custCode,
+        formatDate(d.VSTDateTime),
+        formatCurrency(d.totalAmount),
+      ])
+    : [["No debtor invoices.", "", "", ""]];
+
+  if (summary.debtors?.length) {
+    const totalDebt = summary.debtors.reduce(
+      (acc: number, d: any) => acc + d.totalAmount,
+      0
+    );
+    debtorRows.push(["", "", "Total Debt", formatCurrency(totalDebt)]);
+  }
+
+  renderTable([["Customer", "Code", "Date", "Amount"]], debtorRows);
+
+  // === FINISH
+  doc.save(fileName);
 };

@@ -135,7 +135,6 @@ export default function PreviousShiftsTable({
 
   return (
     <div className="w-full space-y-6">
-      {/* Header and Filters */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
           <div>
@@ -161,7 +160,6 @@ export default function PreviousShiftsTable({
               />
             </div>
 
-            {/* Status Filter */}
             <div className="relative">
               <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <select
@@ -179,7 +177,6 @@ export default function PreviousShiftsTable({
           </div>
         </div>
 
-        {/* Sort Controls */}
         <div className="flex flex-wrap gap-2 mb-4">
           <button
             onClick={() => {
@@ -223,14 +220,13 @@ export default function PreviousShiftsTable({
         )}
       </div>
 
-      {/* Table */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Shift ID
+                  ShiftID
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
@@ -329,7 +325,6 @@ export default function PreviousShiftsTable({
         </div>
       </div>
 
-      {/* Empty State for Filtered Results */}
       {filteredAndSortedShifts.length === 0 && data.shiftList.length > 0 && (
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
           <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />

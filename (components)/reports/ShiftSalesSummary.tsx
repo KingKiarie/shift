@@ -12,7 +12,7 @@ export const ShiftSalesSummaryComponent: React.FC<ShiftSalesSummaryProps> = ({
 }) => {
   if (!summary) {
     return (
-      <div className="p-4  border border-gray-200 rounded-lg text-gray-600">
+      <div className="p-4 w-full h-screen flex items-center justify-center  border border-gray-200 rounded-lg text-gray-600">
         <AlertCircle size={20} className="inline mr-2" />
         No sales summary available for this shift.
       </div>
@@ -42,7 +42,6 @@ export const ShiftSalesSummaryComponent: React.FC<ShiftSalesSummaryProps> = ({
       }}
     >
       <div className="space-y-6 w-full h-auto  p-4" id="invoice-template">
-        {/* Header Section */}
         <div className="">
           <div className="flex flex-col space-y-4 text-center border-b-2 border-black  py-4">
             <h2 className="text-[32px] font-bold text-black">
@@ -91,7 +90,7 @@ export const ShiftSalesSummaryComponent: React.FC<ShiftSalesSummaryProps> = ({
                   Date
                 </th>
                 <td className="px-6 py-3">
-                  {summary.paymentsReceived.datep || "N/A"}
+                  {summary.paymentsReceived.datepaid || "N/A"}
                 </td>
               </tr>
               <tr className="border-b-2 border-black">
@@ -99,7 +98,7 @@ export const ShiftSalesSummaryComponent: React.FC<ShiftSalesSummaryProps> = ({
                   Amount
                 </th>
                 <td className="px-6 py-3 text-right">
-                  {formatCurrency(summary.totalPayments)}
+                  {formatCurrency(summary.debtors.totalAmount)}
                 </td>
               </tr>
               <tr>
@@ -128,14 +127,12 @@ export const ShiftSalesSummaryComponent: React.FC<ShiftSalesSummaryProps> = ({
               <div className="flex flex-col">
                 <span className=" border-black font-medium">Amount:</span>
                 <span className="border-t-2 border-b-2 text-center border-black py-2">
-                  {/* amount goes here */}
                   {summary.totalPayments || "N/A"}
                 </span>
               </div>
               <div className="flex flex-col">
                 <span className="font-medium">Net Sales:</span>
                 <span className="border-t-2 text-center border-b-2 border-black py-2">
-                  {/*net sales  */}
                   {summary.netProfit || "N/A"}
                 </span>
               </div>
@@ -143,7 +140,6 @@ export const ShiftSalesSummaryComponent: React.FC<ShiftSalesSummaryProps> = ({
           </div>
         </div>
 
-        {/* Expenses Section */}
         <div className="w-full ">
           <h3 className="text-start text-[24px] md:text-[32px] font-semibold mt-4">
             Expenses
@@ -296,6 +292,7 @@ export const ShiftSalesSummaryComponent: React.FC<ShiftSalesSummaryProps> = ({
                       {formatDate(debtor.VSTDateTime) || "N/A"}
                     </td>
                     <td className="px-6 py-4 border-r-2 border-black whitespace-nowrap">
+                      
                       {formatCurrency(debtor.totalAmount)}
                     </td>
                   </tr>
