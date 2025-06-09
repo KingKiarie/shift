@@ -2,6 +2,7 @@
 import React from "react";
 import { useShiftReport } from "@/lib/hooks/useShiftReport";
 import type { ShiftReport } from "@/lib/types/shiftReport";
+import { ExportButton } from "../common/exportButton";
 
 interface ShiftReportComponentProps {
   shiftID: string;
@@ -61,7 +62,10 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
   };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-lg w-full">
+    <div
+      className="p-4 bg-white rounded-lg shadow-lg w-full"
+      id="shift-report-template"
+    >
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900">
           {shiftReport.reportname}
@@ -75,7 +79,15 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
             Report Details
           </h3>
 
-          <div></div>
+          <div>
+            <ExportButton
+              summaryData={shiftReport}
+              pdfElementId="shift-report-template"
+              exportTitle="Shift Report"
+              fileName={`shift-report-${shiftReport.shiftid || "unknown"}`}
+              showDropdown={true}
+            />
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm border border-gray-200 rounded-lg">

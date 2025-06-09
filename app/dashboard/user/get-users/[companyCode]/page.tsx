@@ -14,7 +14,7 @@ export default function GetUsersPage() {
       <div className="w-full max-w-[90%] mx-auto">
         <h1 className="text-2xl font-bold mb-4">Users available</h1>
         <div className="w-full h-screen">
-          <UsersTable companyCode={companyCode} />
+          <UsersTable companyCode={companyCode}  />
         </div>
       </div>
     </section>

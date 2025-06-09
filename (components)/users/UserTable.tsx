@@ -1,51 +1,143 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useUsers } from "@/lib/hooks/useUsers";
+import Link from "next/link";
+import { Pagination } from "../pagination/pagination";
 
 interface UsersTableProps {
   companyCode: string;
 }
 
 const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
-  const { data, isLoading, error } = useUsers(companyCode);
+  const { data: users, isLoading, error } = useUsers(companyCode);
 
-  if (isLoading) return <p>Loading users...</p>;
-  if (error) return <p>Error loading users: {error.message}</p>;
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
 
-  console.log("Users data:", data);
+  if (isLoading) {
+    return (
+      <div className="h-screen flex justify-center items-center p-8">
+        <div className="text-lg">Loading users...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-md p-4 m-4">
+        <h3 className="text-red-800 font-medium">Error loading users</h3>
+        <p className="text-red-600 text-sm mt-1">
+          {error.message || "An unexpected error occurred"}
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-2 px-3 py-1 bg-red-100 text-red-700 rounded text-sm hover:bg-red-200"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!users || users.length === 0) {
+    return (
+      <div className="text-center p-8 h-screen w-full items-center justify-center">
+        <p className="text-gray-500">
+          No users found for company code: {companyCode}
+        </p>
+      </div>
+    );
+  }
+
+  console.log("Users data:", users);
+
+  const currentUsers = users.slice(startIdx, endIdx);
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Username</th>
-          <th>Full Name</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Active</th>
-          <th>Created At</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data?.users.map((user) => (
-          <tr key={user.id}>
-            <td>{user.username}</td>
-            <td>{user.fullName}</td>
-            <td>{user.email}</td>
-            <td>{user.role}</td>
-            <td>{user.isActive ? "Yes" : "No"}</td>
-            <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-            <td>
-              <button onClick={() => alert(`Viewing user ${user.username}`)}>
-                View User
-              </button>
-            </td>
+    <div className="overflow-x-auto">
+      <table className="min-w-full bg-white border border-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              UserID
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Full Name
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Email
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Role
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Active
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Created At
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Actions
+            </th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {currentUsers.map((user) => (
+            <tr key={user.id} className="hover:bg-gray-50">
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                {user.id}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {user.fullName || "not defined"}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {user.email}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {user.role || "not set"}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <span
+                  className={`px-2 py-1 text-xs rounded-full ${
+                    user.isActive
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
+                  {user.isActive ? "Active" : "Inactive"}
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {new Date(user.createdAt).toLocaleDateString()}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <Link
+                  href={`/dashboard/shift/previous-shifts/${companyCode}/${user.id}`}
+                >
+                  <button className="text-indigo-600 hover:text-indigo-900">
+                    View shifts
+                  </button>
+                </Link>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div>
+        <Pagination
+          currentPage={currentPage}
+          totalItems={users.length}
+          itemsPerPage={itemsPerPage}
+          onPageChange={(page) => {
+            setCurrentPage(page);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
+      </div>
+    </div>
   );
 };
 

@@ -27,7 +27,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
       {showDropdown ? (
         <div className="group">
           <button
-            className="bg-gray-800 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-gray-700"
+            className="bg-blue-800 text-white md:px-6 md:py-3 px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-600 text-[12px]"
             onClick={handleExportPDF}
           >
             <Download size={16} />
@@ -44,7 +44,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
         </div>
       ) : (
         <button
-          className="bg-gray-800 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-gray-700"
+          className="bg-blue-700 text-white md:px-6 md:py-3 cursor-pointer px-4 py-2 rounded flex items-center gap-2 hover:bg-blue-600 text-[12px]"
           onClick={handleExportPDF}
         >
           <Download size={16} />
