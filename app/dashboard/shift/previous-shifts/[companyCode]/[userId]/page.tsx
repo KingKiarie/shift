@@ -8,7 +8,6 @@ export default function PreviousShiftsPage() {
   const params = useParams();
   const user = decodeJWT();
 
-  
   const companyCode = params?.companyCode as string;
   const userID =
     (params?.userId as string) || user?.id || user?.userId || user?.sub;
@@ -30,7 +29,7 @@ export default function PreviousShiftsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[90%] mx-auto px-4 sm:px-6 lg:px-8">
         <PreviousShiftsTable companyCode={companyCode} userID={userID} />
       </div>
     </div>
