@@ -95,7 +95,9 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
           <div>
             <ExportButton
               summaryData={shiftReport}
-              fileName={`shift-report-${shiftReport.shiftid || "unknown"}`}
+              fileName={`shift_report_${
+                shiftReport.reportname || "unknown"
+              }_shift_id_ ${shiftReport.shiftid}`}
               type="shift"
               showDropdown={true}
             />

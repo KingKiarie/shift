@@ -134,7 +134,7 @@ export default function PreviousShiftsTable({
   }
 
   return (
-    <div className="w-full space-y-6 w-full">
+    <div className="w-full space-y-6 ">
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
           <div>
