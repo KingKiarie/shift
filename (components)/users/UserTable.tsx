@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import { useUsers } from "@/lib/hooks/useUsers";
 import Link from "next/link";
@@ -12,10 +10,14 @@ interface UsersTableProps {
 const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
   const { data: users, isLoading, error } = useUsers(companyCode);
 
+  // Filter states
+  const [filterUserId, setFilterUserId] = useState("");
+  const [filterFullName, setFilterFullName] = useState("");
+  const [filterEmail, setFilterEmail] = useState("");
+  const [filterActive, setFilterActive] = useState("");
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-  const startIdx = (currentPage - 1) * itemsPerPage;
-  const endIdx = startIdx + itemsPerPage;
 
   if (isLoading) {
     return (
@@ -52,12 +54,80 @@ const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
     );
   }
 
-  console.log("Users data:", users);
+  // Filter users based on filter states
+  const filteredUsers = users.filter((user) => {
+    const matchesUserId = filterUserId
+      ? user.id.toString().includes(filterUserId)
+      : true;
+    const matchesFullName = filterFullName
+      ? user.salesRepName?.toLowerCase().includes(filterFullName.toLowerCase())
+      : true;
+    const matchesEmail = filterEmail
+      ? user.email.toLowerCase().includes(filterEmail.toLowerCase())
+      : true;
+    const matchesActive =
+      filterActive === ""
+        ? true
+        : filterActive === "active"
+        ? user.isActive === true
+        : user.isActive === false;
 
-  const currentUsers = users.slice(startIdx, endIdx);
+    return matchesUserId && matchesFullName && matchesEmail && matchesActive;
+  });
+
+  // Pagination logic
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
+  const currentUsers = filteredUsers.slice(startIdx, endIdx);
 
   return (
-    <section className="w-full items-center justify-center">
+    <section className="w-full items-center h-auto justify-center">
+      {/* Filters Section */}
+      <div className="mb-4 flex flex-wrap gap-4 py-8 px-4 bg-white shadow-sm">
+        <input
+          type="text"
+          placeholder="Filter by UserID"
+          value={filterUserId}
+          onChange={(e) => {
+            setFilterUserId(e.target.value);
+            setCurrentPage(1); // reset to first page on filter change
+          }}
+          className="border border-gray-300 rounded px-3 py-1"
+        />
+        <input
+          type="text"
+          placeholder="Filter by Full Name"
+          value={filterFullName}
+          onChange={(e) => {
+            setFilterFullName(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="border border-gray-300 rounded px-3 py-1"
+        />
+        <input
+          type="text"
+          placeholder="Filter by Email"
+          value={filterEmail}
+          onChange={(e) => {
+            setFilterEmail(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="border border-gray-300 rounded px-3 py-1"
+        />
+        <select
+          value={filterActive}
+          onChange={(e) => {
+            setFilterActive(e.target.value);
+            setCurrentPage(1);
+          }}
+          className="border border-gray-300 rounded px-3 py-1"
+        >
+          <option value="">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200">
           <thead className="bg-gray-50">
@@ -72,14 +142,13 @@ const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
                 Email
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Role
+                UserCode
               </th>
+
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Active
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Created At
-              </th>
+
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
@@ -92,14 +161,15 @@ const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
                   {user.id}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {user.fullName || "not defined"}
+                  {user.SalesRepName}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {user.email}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {user.role || "not set"}
+                  {user.erpUserCode}
                 </td>
+
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${
@@ -111,9 +181,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
                     {user.isActive ? "Active" : "Inactive"}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(user.createdAt).toLocaleDateString()}
-                </td>
+
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <Link
                     href={`/dashboard/shift/previous-shifts/${companyCode}/${user.id}`}
@@ -125,12 +193,19 @@ const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
                 </td>
               </tr>
             ))}
+            {currentUsers.length === 0 && (
+              <tr>
+                <td colSpan={5} className="text-center py-4 text-gray-500">
+                  No users match the filter criteria.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
         <div>
           <Pagination
             currentPage={currentPage}
-            totalItems={users.length}
+            totalItems={filteredUsers.length}
             itemsPerPage={itemsPerPage}
             onPageChange={(page) => {
               setCurrentPage(page);
