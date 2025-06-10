@@ -65,7 +65,7 @@ export default function LoginComponent() {
 
           setSuccess(true);
           setTimeout(() => {
-            router.push(`/dashboard/${company}`);
+            router.push(`/dashboard/user/get-users/${company}`);
           }, 1000);
         } catch (err) {
           setError("Failed to process authentication token.");
