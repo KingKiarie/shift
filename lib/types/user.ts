@@ -10,6 +10,7 @@ export interface User {
 }
 
 export interface GetUsersResponse {
+   
   data: User[];
   total: number;
 }

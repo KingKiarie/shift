@@ -59,7 +59,7 @@ export default function ShiftSalesSummaryPage() {
           </div>
           <ExportButton
             summaryData={summary}
-            fileName={`sales-summary-${summary.shiftDetails[0]?.shiftID}`}
+            fileName={`sales_summary_${summary.salesRep[0]?.route}_shiftId_${summary.shiftDetails[0]?.shiftID}`}
             type="sales"
           />
         </div>

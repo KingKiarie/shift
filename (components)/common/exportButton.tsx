@@ -24,6 +24,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
 }) => {
   const handleExportPDF = () => {
     if (type === "shift") {
+      // report_name_shiftid.pdf
       generateShiftReportPDF(summaryData, `${fileName}.pdf`);
     } else {
       generateSalesSummaryPDF(summaryData, `${fileName}.pdf`);
