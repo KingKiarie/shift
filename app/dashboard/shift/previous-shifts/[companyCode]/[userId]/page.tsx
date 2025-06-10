@@ -10,7 +10,7 @@ export default function PreviousShiftsPage() {
 
   const companyCode = params?.companyCode as string;
   const userID =
-    (params?.userId as string) || user?.id || user?.userId || user?.sub;
+    (params?.userId as string) || user?.areaCode || user?.email || user?.role;
 
   if (!companyCode || !userID) {
     return (

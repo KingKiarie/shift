@@ -27,7 +27,8 @@ export default function AsideMenu() {
   const searchParams = useSearchParams();
 
   const user = decodeJWT();
-  const userId = user?.id || user?.userId || user?.sub || null;
+  const userId =
+    user?.SalesRepName || user?.areaCode || user?.companyCode || null;
   const companyCode = params?.companyCode as string | null;
 
   const [shiftId, setShiftId] = useState<string | null>(() => {
@@ -45,13 +46,6 @@ export default function AsideMenu() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const NavigationLinks = [
-    {
-      name: "Warehouse Report",
-      slug: companyCode
-        ? `/dashboard/warehousereport/${companyCode}`
-        : "/dashboard/warehousereport",
-      icon: <Warehouse className="w-6 h-6" />,
-    },
     {
       name: "Users",
       slug: companyCode

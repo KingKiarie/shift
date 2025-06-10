@@ -3,10 +3,14 @@
 import React from "react";
 import { ShiftSalesSummary } from "@/lib/types/shiftSalesSummary";
 import { Download } from "lucide-react";
-import { generateShiftReportPDF, generateSalesSummaryPDF } from "@/app/utils/exportPdf";
+import {
+  generateShiftReportPDF,
+  generateSalesSummaryPDF,
+} from "@/app/utils/exportPdf";
+import { ShiftReport } from "@/lib/types/shiftReport";
 
 interface ExportButtonProps {
-  summaryData: ShiftSalesSummary;
+  summaryData: ShiftSalesSummary | ShiftReport;
   fileName: string;
   type: "shift" | "sales";
   showDropdown?: boolean;

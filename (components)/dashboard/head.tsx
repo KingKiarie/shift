@@ -12,8 +12,12 @@ export default function Head() {
 
   useEffect(() => {
     const decoded = decodeJWT();
-
-    setUser(decoded);
+    if (decoded) {
+      setUser({
+        userName: decoded.userName,
+        shiftID: decoded.shiftID?.toString(), 
+      });
+    }
   }, []);
 
   if (!user) {
@@ -26,7 +30,7 @@ export default function Head() {
   return (
     <header className="w-full bg-[#1e1e1e] ">
       <div className="flex items-start justify-evenly   mx-auto">
-        <div className="lg:w-1/4 flex items-center justify-center text-white border-r-2 border-zinc-900 h-full border-b-2">
+        <div className="lg:w-1/4 flex items-center justify-center text-white border-r-2 py-4 border-zinc-900 h-full border-b-2">
           <Image
             width={100}
             height={100}
@@ -34,10 +38,10 @@ export default function Head() {
             alt="Prime mattress "
           ></Image>
         </div>
-        <div className="lg:w-3/4">
+        <div className="lg:w-3/4 py-4">
           <div className="w-full flex flex-row items-start justify-between px-2">
-            <div>
-              <h1 className="text-[24px] md:text-[32px] lg:text-[34px] text-white font-medium">
+            <div className="w-full flex items-center justify-start">
+              <h1 className="text-[16px] md:text-[24px] text-white font-medium">
                 Overview
               </h1>
             </div>
