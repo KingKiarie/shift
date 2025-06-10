@@ -1,8 +1,8 @@
 export interface PreviousShift {
   shiftID: string;
-  shiftStart: string; // ISO Date string
-  shiftEnd: string | null; // null if shift is still open
-  shiftStatus: "OPEN" | "CLOSE"; // literal types for better safety
+  shiftStart: string; 
+  shiftEnd: string | null; 
+  shiftStatus: "OPEN" | "CLOSE"; 
 }
 
 export interface PreviousShiftsResponse {

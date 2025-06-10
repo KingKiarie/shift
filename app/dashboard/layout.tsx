@@ -8,13 +8,17 @@ import Providers from "../providers";
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <>
-      <section className="w-full h-auto flex bg-[#F6F4F4]/60 ">
-        <nav className="lg:h-auto lg:w-1/4 bg-[#1e1e1e]">
-          <AsideMenu />
-        </nav>
-        <main className="w-full lg:w-3/4">
+      <section className="w-full h-auto flex flex-col bg-[#F6F4F4]/60 ">
+        <div className="w-full">
           <Head />
-          <Providers>{children}</Providers>
+        </div>
+        <main className="w-full h-auto flex flex-row">
+          <div className=" bg-[#1e1e1e] lg:w-1/4 lg:h-auto ">
+            <AsideMenu />
+          </div>
+          <div className="w-full lg:w-3/4">
+            <Providers>{children}</Providers>
+          </div>
         </main>
       </section>
     </>

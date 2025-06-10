@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { decodeJWT } from "@/lib/decodeJwt";
-import { ExportButton } from "@/(components)/common/exportButton";
 import { Pagination } from "@/(components)/pagination/pagination";
 import { useWarehouses } from "@/lib/hooks/useWarehouse";
 import {
@@ -198,15 +197,6 @@ export default function WarehouseReport() {
                   </select>
                 </div>
               </div>
-
-              <ExportButton
-                csvData={formatWarehouseDataForExport(
-                  filteredAndSortedWarehouses
-                )}
-                pdfElementId="warehouse-table"
-                exportTitle={`Warehouse Report - ${user?.companyCode}`}
-                fileName={`warehouse-report-${user?.companyCode}`}
-              />
             </div>
           </div>
 

@@ -12,7 +12,7 @@ export const ShiftSalesSummaryComponent: React.FC<ShiftSalesSummaryProps> = ({
 }) => {
   if (!summary) {
     return (
-      <div className="p-4  border border-gray-200 rounded-lg text-gray-600">
+      <div className="p-4 w-full h-screen flex items-center justify-center  border border-gray-200 rounded-lg text-gray-600">
         <AlertCircle size={20} className="inline mr-2" />
         No sales summary available for this shift.
       </div>
@@ -41,9 +41,8 @@ export const ShiftSalesSummaryComponent: React.FC<ShiftSalesSummaryProps> = ({
         backgroundColor: "#fff",
       }}
     >
-      <div className="space-y-6 w-full h-auto  p-4" id="invoice-template">
-        {/* Header Section */}
-        <div className="">
+      <div className="space-y-6 w-full h-auto   p-4" id="invoice-template">
+        <div className="flex flex-col space-y-2">
           <div className="flex flex-col space-y-4 text-center border-b-2 border-black  py-4">
             <h2 className="text-[32px] font-bold text-black">
               Shift Summary Report
@@ -53,7 +52,7 @@ export const ShiftSalesSummaryComponent: React.FC<ShiftSalesSummaryProps> = ({
             </h3>
           </div>
           <table className=" hidden bg-white min-w-full divide-y divide-gray-200 mt-2">
-            <tbody className="border-2 border-black">
+            <tbody className="border-[1px] border-black ">
               <tr className="border-b-2 border-black">
                 <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider border-r-2">
                   Route
@@ -87,27 +86,27 @@ export const ShiftSalesSummaryComponent: React.FC<ShiftSalesSummaryProps> = ({
                 </td>
               </tr>
               <tr className="border-b-2 border-black">
-                <th className="px-6 py-3 text-left text-xs font-medium  uppercase tracking-wider border-r-2">
-                  Date
+                <th className="px-6 py-3  uppercase tracking-wider border-r-2">
+                  <p className="text-[12px] md:text-[14px] font-bold">Date</p>
                 </th>
                 <td className="px-6 py-3">
-                  {summary.paymentsReceived.datep || "N/A"}
+                  {formatDate(summary.paymentsReceived.datePaid) || "N/A"}
                 </td>
               </tr>
-              <tr className="border-b-2 border-black">
-                <th className="border-r-2 px-6 py-3 text-right text-xs font-medium  uppercase tracking-wider">
+              <tr className="border-b-2 border-black w-full flex flex-col space-y-4">
+                <th className="border-r-2  px-6 py-3  text-[12px] md:text-[14px] font-medium  uppercase tracking-wider text-center">
                   Amount
                 </th>
                 <td className="px-6 py-3 text-right">
-                  {formatCurrency(summary.totalPayments)}
+                  {formatCurrency(summary.debtors.totalAmount)}
                 </td>
               </tr>
               <tr>
                 <th className="px-6 py-3 text-right text-xs font-medium  border-r-2 uppercase tracking-wider">
                   Net Sales
                 </th>
-                <td className="px-6 py-3 text-right">
-                  {formatCurrency(summary.netProfit)}
+                <td className="px-6 py-3 ">
+                  {formatCurrency(summary.totalAmount)}
                 </td>
               </tr>
             </tbody>
@@ -123,27 +122,41 @@ export const ShiftSalesSummaryComponent: React.FC<ShiftSalesSummaryProps> = ({
                 Shift Status:{summary.shiftDetails[0]?.shiftStatus || "N/A"}
               </span>
             </div>
-            <div className="space-y-4">
-              <span>Date: {summary.shiftDetails[0]?.shiftStart || "N/A"}</span>
+            <div className="space-y-4 w-auto">
+              <span className="flex flex-row space-x-3">
+                <p className="font-bold">Date:</p>
+                {formatDate(summary.shiftDetails[0]?.shiftStart) || "N/A"}
+              </span>
               <div className="flex flex-col">
-                <span className=" border-black font-medium">Amount:</span>
+                <span className=" border-black font-medium text-center">
+                  Amount:
+                </span>
                 <span className="border-t-2 border-b-2 text-center border-black py-2">
-                  {/* amount goes here */}
-                  {summary.totalPayments || "N/A"}
+                  {formatCurrency(
+                    summary.debtors.reduce(
+                      (acc: number, debtor: any) =>
+                        acc + (debtor.totalAmount || 0),
+                      0
+                    )
+                  )}
                 </span>
               </div>
               <div className="flex flex-col">
-                <span className="font-medium">Net Sales:</span>
+                <span className="font-medium text-center">Net Sales:</span>
                 <span className="border-t-2 text-center border-b-2 border-black py-2">
-                  {/*net sales  */}
-                  {summary.netProfit || "N/A"}
+                  {formatCurrency(
+                    summary.debtors.reduce(
+                      (acc: number, debtor: any) =>
+                        acc + (debtor.totalAmount || 0),
+                      0
+                    ) - summary.totalExpense
+                  )}
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Expenses Section */}
         <div className="w-full ">
           <h3 className="text-start text-[24px] md:text-[32px] font-semibold mt-4">
             Expenses
@@ -252,7 +265,9 @@ export const ShiftSalesSummaryComponent: React.FC<ShiftSalesSummaryProps> = ({
               </tfoot>
             </table>
           ) : (
-            <p className=" mt-2">No payments recorded.</p>
+            <div className="w-full h-screen items-center justify-center">
+              <p className=" mt-2">No payments recorded.</p>
+            </div>
           )}
         </div>
         <div>

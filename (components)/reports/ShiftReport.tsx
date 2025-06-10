@@ -1,8 +1,10 @@
 "use client";
 import React from "react";
 import { useShiftReport } from "@/lib/hooks/useShiftReport";
-import type { ShiftReport } from "@/lib/types/shiftReport";
+import { ShiftReport } from "@/lib/types/shiftReport";
 import { ExportButton } from "../common/exportButton";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 interface ShiftReportComponentProps {
   shiftID: string;
@@ -53,7 +55,7 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
     const numValue = typeof value === "string" ? parseFloat(value) : value;
     return new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "KES",
     }).format(numValue || 0);
   };
 
@@ -66,11 +68,22 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
       className="p-4 bg-white rounded-lg shadow-lg w-full"
       id="shift-report-template"
     >
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">
-          {shiftReport.reportname}
-        </h2>
-        <p className="text-gray-600">Shift ID: {shiftReport.shiftid}</p>
+      <div className="mb-6 flex flex-col  md:flex-row items-start justify-between">
+        <div className="w-full flex flex-col space-y-2">
+          <h2 className="text-2xl font-bold text-gray-900">
+            {shiftReport.reportname}
+          </h2>
+          <p className="text-gray-600">Shift ID: {shiftReport.shiftid}</p>
+        </div>
+        <div className="w-full flex items-end justify-end py-2">
+          <Link
+            href={`/dashboard/shift/shift-sales-summary/${shiftID}/${companyCode}/${userID}`}
+            className="flex items-center space-x-2 cursor-pointer px-4 py-2 md:px-6 md:py-3 font-bold hover:border-blue-700  underline underline-offset-4 duration-300 ease-in"
+          >
+            <button>View reports</button>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
 
       <section className="mb-8">
@@ -82,9 +95,8 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
           <div>
             <ExportButton
               summaryData={shiftReport}
-              pdfElementId="shift-report-template"
-              exportTitle="Shift Report"
               fileName={`shift-report-${shiftReport.shiftid || "unknown"}`}
+              type="shift"
               showDropdown={true}
             />
           </div>
@@ -150,7 +162,7 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
                     {formatCurrency(item.avgPrice)}
                   </td>
                   <td className="border-b border-gray-100 px-4 py-3 text-right">
-                    {formatCurrency(item.stdCost)}
+                    {formatCurrency(item.stdCost * item.qtySold)}
                   </td>
                   <td className="border-b border-gray-100 px-4 py-3 text-right">
                     {formatCurrency(item.margin)}
@@ -171,31 +183,53 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
             <div className="flex justify-between">
               <span className="text-gray-600">Qty Taken:</span>
               <span className="font-medium">
-                {formatNumber(shiftReport.grandTotals.qtyTaken)}
+                {formatNumber(
+                  shiftReport.reportDetails.reduce(
+                    (total, item) => total + Number(item.qtyTaken),
+                    0
+                  )
+                )}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Qty Returned:</span>
               <span className="font-medium">
-                {shiftReport.grandTotals.qtyReturned}
+                {formatNumber(
+                  shiftReport.reportDetails.reduce(
+                    (total, item) => total + Number(item.qtyReturned),
+                    0
+                  )
+                )}{" "}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Qty Sold:</span>
               <span className="font-medium">
-                {formatNumber(shiftReport.grandTotals.qtySold)}
+                {formatNumber(
+                  shiftReport.reportDetails.reduce(
+                    (total, item) => total + Number(item.qtySold),
+                    0
+                  )
+                )}{" "}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Total Sale:</span>
               <span className="font-medium">
-                {formatCurrency(shiftReport.grandTotals.totalSale)}
+                {shiftReport.reportDetails.map((profit, idx) => {
+                  const profitValue = profit.totalSale;
+                  return <p key={idx}>{formatCurrency(profitValue)}</p>;
+                })}{" "}
               </span>
             </div>
             <div className="flex justify-between border-t pt-2">
               <span className="text-gray-600">Margin:</span>
               <span className="font-bold text-green-600">
-                {shiftReport.grandTotals.margin}
+                {shiftReport.reportDetails.map((profit, idx) => {
+                  const profitValue =
+                    profit.totalSale - profit.stdCost * profit.qtySold;
+                  return <p key={idx}>{formatCurrency(profitValue)}</p>;
+                })}{" "}
               </span>
             </div>
           </div>
@@ -209,7 +243,11 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
             <div className="flex justify-between">
               <span className="text-gray-600">Grand Profit:</span>
               <span className="font-bold text-green-600">
-                {formatCurrency(shiftReport.profitOverview.grandProfit)}
+                {shiftReport.reportDetails.map((profit, idx) => {
+                  const profitValue =
+                    profit.totalSale - profit.stdCost * profit.qtySold;
+                  return <p key={idx}>{formatCurrency(profitValue)}</p>;
+                })}
               </span>
             </div>
             <div className="flex justify-between">
@@ -221,15 +259,15 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
             <div className="flex justify-between border-t pt-2">
               <span className="text-gray-600">Net Profit:</span>
               <span className="font-bold text-blue-600">
-                {formatCurrency(
-                  shiftReport.profitOverview.grandProfit -
-                    shiftReport.profitOverview.shiftExpense
-                )}
+                {shiftReport.reportDetails.map((profit, idx) => {
+                  const profitValue =
+                    profit.totalSale -
+                    profit.stdCost * profit.qtySold -
+                    shiftReport.profitOverview.shiftExpense;
+                  return <p key={idx}>{formatCurrency(profitValue)}</p>;
+                })}
               </span>
             </div>
-          </div>
-          <div>
-            <button>View SalesSummary</button>
           </div>
         </section>
       </div>

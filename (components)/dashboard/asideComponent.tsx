@@ -46,11 +46,6 @@ export default function AsideMenu() {
 
   const NavigationLinks = [
     {
-      name: "Dashboard",
-      slug: companyCode ? `/dashboard/${companyCode}` : "/dashboard",
-      icon: <LayoutDashboard className="w-6 h-6" />,
-    },
-    {
       name: "Warehouse Report",
       slug: companyCode
         ? `/dashboard/warehousereport/${companyCode}`
@@ -81,15 +76,17 @@ export default function AsideMenu() {
   };
 
   const MenuContent = () => (
-    <aside className="w-full h-auto bg-[#1e1e1e] text-white flex flex-col justify-between p-4">
+    <aside className="w-full h-auto bg-[#1e1e1e] flex flex-col justify-between p-4">
       <div className="flex flex-col w-full h-[100%] items-start justify-between">
-        <div className="flex items-center justify-center bg-red-500 p-2 rounded-md w-full">
+        <div className="flex items-center justify-center bg-blue-700 p-2 rounded-md w-full">
           {/* <img
             src="/prime-foam.png"
             alt="Logo"
             className="w-20 h-10 object-cover bg-white rounded-md"
           /> */}
-          <h1 className="text-[20px] text-center font-bold">Prime Mattress</h1>
+          <h1 className="text-[20px] text-center text-white font-bold">
+            Prime Mattress
+          </h1>
         </div>
         <div className="w-full">
           <ul className="mt-8 space-y-4">
@@ -118,8 +115,8 @@ export default function AsideMenu() {
                 className="flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-[#353238] font-semibold"
               >
                 <div className="flex items-center space-x-3">
-                  <CalendarSync className="w-6 h-6" />
-                  <span>View Shifts</span>
+                  <CalendarSync className="w-6 text-blue-600 h-6" />
+                  <span className="text-white"> View Shifts</span>
                 </div>
                 <span>{isShiftMenuOpen ? "−" : "+"}</span>
               </button>
