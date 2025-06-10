@@ -37,7 +37,7 @@ export default function ShiftReportPage() {
         <ShiftReportComponent
           shiftID={shiftID}
           companyCode={companyCode}
-          userID={userID}
+          userID={String(userID)}
         />
       </div>
     </div>

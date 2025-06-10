@@ -91,7 +91,7 @@ export const generateShiftReportPDF = (summary: any, fileName: string) => {
       lineWidth: 0.5,
     },
     didDrawPage: (data) => {
-      y = data.cursor.y + 10;
+      y = (data.cursor?.y ?? 0) + 10;
     },
   });
 
@@ -146,7 +146,7 @@ export const generateShiftReportPDF = (summary: any, fileName: string) => {
       1: { fontStyle: "normal", halign: "right" },
     },
     didDrawPage: (data) => {
-      y = data.cursor.y + 10;
+      y = (data.cursor?.y ?? 0) + 10;
     },
   });
 
@@ -232,7 +232,7 @@ export const generateSalesSummaryPDF = (summary: any, fileName: string) => {
         lineColor: 0,
       },
       didDrawPage: (data) => {
-        y = data.cursor.y + 10;
+        y = (data.cursor?.y ?? 0) + 10;
       },
     });
   };
