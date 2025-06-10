@@ -23,7 +23,7 @@ export default function LoginComponent() {
         const payload = decodeJWT();
         const company = payload?.companyCode;
         if (company) {
-          router.replace(`/dashboard/${company}`);
+          router.replace(`/dashboard/user/get-users/${company}`);
         } else {
           console.error("No company code found in token");
           localStorage.removeItem("token");
