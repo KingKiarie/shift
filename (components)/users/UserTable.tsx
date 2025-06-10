@@ -81,9 +81,9 @@ const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
   const currentUsers = filteredUsers.slice(startIdx, endIdx);
 
   return (
-    <section className="w-full items-center justify-center">
+    <section className="w-full items-center h-auto justify-center">
       {/* Filters Section */}
-      <div className="mb-4 flex flex-wrap gap-4">
+      <div className="mb-4 flex flex-wrap gap-4 py-8 px-4 bg-white shadow-sm">
         <input
           type="text"
           placeholder="Filter by UserID"
