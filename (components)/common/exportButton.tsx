@@ -2,22 +2,28 @@
 
 import React from "react";
 import { ShiftSalesSummary } from "@/lib/types/shiftSalesSummary";
-import { generateShiftReportPDF } from "@/app/utils/exportPdf";
 import { Download } from "lucide-react";
+import { generateShiftReportPDF, generateSalesSummaryPDF } from "@/app/utils/exportPdf";
 
 interface ExportButtonProps {
   summaryData: ShiftSalesSummary;
   fileName: string;
+  type: "shift" | "sales";
   showDropdown?: boolean;
 }
 
 export const ExportButton: React.FC<ExportButtonProps> = ({
   summaryData,
   fileName,
+  type,
   showDropdown = false,
 }) => {
   const handleExportPDF = () => {
-    generateShiftReportPDF(summaryData, `${fileName}.pdf`);
+    if (type === "shift") {
+      generateShiftReportPDF(summaryData, `${fileName}.pdf`);
+    } else {
+      generateSalesSummaryPDF(summaryData, `${fileName}.pdf`);
+    }
   };
 
   return (

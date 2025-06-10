@@ -46,7 +46,7 @@ export default function ShiftSalesSummaryPage() {
 
   return (
     <section className="h-auto">
-      <div className="max-w-[90%] mx-auto py-12 flex flex-col space-y-4">
+      <div className="max-w-[95%] mx-auto py-12 flex flex-col space-y-4">
         <div className="w-full flex items-start justify-between">
           <div className="flex space-x-2 underline underline-offset-4">
             <ArrowLeft className="h-6 w-6 text-gray-800" />
@@ -59,12 +59,8 @@ export default function ShiftSalesSummaryPage() {
           </div>
           <ExportButton
             summaryData={summary}
-            pdfElementId="invoice-template"
-            exportTitle="Shift Sales Summary"
-            fileName={`shift-summary-${
-              summary.shiftDetails?.[0]?.shiftID || "unknown"
-            }`}
-            showDropdown={true}
+            fileName={`sales-summary-${summary.shiftDetails[0]?.shiftID}`}
+            type="sales"
           />
         </div>
         <ShiftSalesSummaryComponent summary={summary} />

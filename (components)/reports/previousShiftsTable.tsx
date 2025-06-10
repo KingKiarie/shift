@@ -134,7 +134,7 @@ export default function PreviousShiftsTable({
   }
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-6 w-full">
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
           <div>
@@ -220,7 +220,7 @@ export default function PreviousShiftsTable({
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden w-full">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -304,7 +304,7 @@ export default function PreviousShiftsTable({
                         href={`/dashboard/shift/shift-sales-summary/${shift.shiftID}/${companyCode}/${userID}`}
                       >
                         <button className="text-blue-600 hover:text-blue-900 font-medium transition-colors">
-                          View Details
+                          View Summary
                         </button>
                       </Link>
                       {shift.shiftStatus && (

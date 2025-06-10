@@ -1,8 +1,10 @@
 "use client";
 import React from "react";
 import { useShiftReport } from "@/lib/hooks/useShiftReport";
-import type { ShiftReport } from "@/lib/types/shiftReport";
+import { ShiftReport } from "@/lib/types/shiftReport";
 import { ExportButton } from "../common/exportButton";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 interface ShiftReportComponentProps {
   shiftID: string;
@@ -66,11 +68,22 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
       className="p-4 bg-white rounded-lg shadow-lg w-full"
       id="shift-report-template"
     >
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">
-          {shiftReport.reportname}
-        </h2>
-        <p className="text-gray-600">Shift ID: {shiftReport.shiftid}</p>
+      <div className="mb-6 flex flex-col  md:flex-row items-start justify-between">
+        <div className="w-full flex flex-col space-y-2">
+          <h2 className="text-2xl font-bold text-gray-900">
+            {shiftReport.reportname}
+          </h2>
+          <p className="text-gray-600">Shift ID: {shiftReport.shiftid}</p>
+        </div>
+        <div className="w-full flex items-end justify-end py-2">
+          <Link
+            href={`/dashboard/shift/shift-sales-summary/${shiftID}/${companyCode}/${userID}`}
+            className="flex items-center space-x-2 cursor-pointer px-4 py-2 md:px-6 md:py-3 font-bold hover:border-blue-700  underline underline-offset-4 duration-300 ease-in"
+          >
+            <button>View reports</button>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
 
       <section className="mb-8">
@@ -82,9 +95,8 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
           <div>
             <ExportButton
               summaryData={shiftReport}
-              pdfElementId="shift-report-template"
-              exportTitle="Shift Report"
               fileName={`shift-report-${shiftReport.shiftid || "unknown"}`}
+              type="shift"
               showDropdown={true}
             />
           </div>
@@ -213,7 +225,11 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
             <div className="flex justify-between border-t pt-2">
               <span className="text-gray-600">Margin:</span>
               <span className="font-bold text-green-600">
-                {shiftReport.reportDetails.margin}
+                {shiftReport.reportDetails.map((profit, idx) => {
+                  const profitValue =
+                    profit.totalSale - profit.stdCost * profit.qtySold;
+                  return <p key={idx}>{formatCurrency(profitValue)}</p>;
+                })}{" "}
               </span>
             </div>
           </div>
@@ -245,14 +261,13 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
               <span className="font-bold text-blue-600">
                 {shiftReport.reportDetails.map((profit, idx) => {
                   const profitValue =
-                    profit.totalSale - profit.stdCost * profit.qtySold;
+                    profit.totalSale -
+                    profit.stdCost * profit.qtySold -
+                    shiftReport.profitOverview.shiftExpense;
                   return <p key={idx}>{formatCurrency(profitValue)}</p>;
                 })}
               </span>
             </div>
-          </div>
-          <div>
-            <button>View SalesSummary</button>
           </div>
         </section>
       </div>

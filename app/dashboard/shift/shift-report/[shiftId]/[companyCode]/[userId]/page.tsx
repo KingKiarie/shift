@@ -16,10 +16,6 @@ export default function ShiftReportPage() {
     user?.companyCode ||
     user?.userName;
 
-  console.log("Shift ID:", shiftID);
-  console.log("Company Code:", companyCode);
-  console.log("User ID:", userID);
-
   if (!shiftID || !companyCode || !userID) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -37,7 +33,7 @@ export default function ShiftReportPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[95%] mx-auto w-full ">
         <ShiftReportComponent
           shiftID={shiftID}
           companyCode={companyCode}

@@ -23,9 +23,9 @@ export default function Head() {
     );
   }
   return (
-    <header className="w-full border-b-2 border-[#1e1e1e] py-4">
-      <div className="flex items-start justify-between max-w-[90%] mx-auto">
-        <div className="flex flex-col font-bold">
+    <header className="w-full bg-gray-50 py-4">
+      <div className="flex items-start justify-between max-w-[95%]  mx-auto">
+        <div className="flex flex-col font-bold bg-white rounded-xl shadow p-4">
           <h3 className="text-[12px] md:text-[24px]">
             Welcome back <br />
           </h3>
