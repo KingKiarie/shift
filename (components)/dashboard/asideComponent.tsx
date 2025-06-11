@@ -63,7 +63,7 @@ export default function AsideMenu() {
   };
 
   const MenuContent = () => (
-    <aside className="w-full h-auto bg-[#1e1e1e] flex flex-col justify-between p-4 shadow-md">
+    <aside className="w-full h-auto bg-[#1e1e1e] flex flex-col justify-between p-4 ">
       <div className="flex flex-col w-full h-[100%] items-start justify-between">
         <div className="flex items-start justify-start bg-blue-700 p-2 rounded-md w-full">
           {/* <img

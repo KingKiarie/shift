@@ -29,19 +29,19 @@ export default function Head() {
   }
   return (
     <header className="w-full bg-[#1e1e1e]">
-      <div className="flex items-start justify-evenly   mx-auto">
+      <div className="flex flex-col lg:flex-row items-start justify-evenly   mx-auto">
         <div className="lg:w-1/4 w-full flex items-center justify-center max-w-[90%] mx-auto text-white border-r-2 py-4 border-zinc-900 h-full">
           <Image
-            width={100}
-            height={100}
+            width={60}
+            height={60}
             src={"/prime-foam.png"}
             alt="Prime mattress "
-            className="bg-white p-4 rounded-md"
+            className="bg-white p-4 rounded-md "
           />
         </div>
         <div className="lg:w-3/4 py-4 max-w-[90%] mx-auto">
           <div className="w-full flex flex-row items-start justify-between ">
-            <div className="w-full flex items-center justify-start">
+            <div className="w-full hidden lg:flex items-center justify-start px-8">
               <h1 className="text-[16px] md:text-[24px] text-white font-medium">
                 Overview
               </h1>

@@ -12,8 +12,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <div className="w-full">
           <Head />
         </div>
-        <main className="w-full h-auto flex flex-row">
-          <div className=" bg-[#1e1e1e] lg:w-1/4 lg:h-auto ">
+        <main className="w-full h-auto flex flex-row ">
+          <div className=" bg-[#1e1e1e] lg:w-1/4 lg:h-auto shadow-md ">
             <AsideMenu />
           </div>
           <div className="w-full lg:w-3/4">

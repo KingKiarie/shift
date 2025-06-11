@@ -9,8 +9,10 @@ import {
   CheckCircle,
   Search,
   Filter,
+  ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface PreviousShiftsTableProps {
   companyCode?: string;
@@ -31,6 +33,9 @@ export default function PreviousShiftsTable({
   );
   const [sortBy, setSortBy] = useState<"date" | "status">("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [loadingButton, setLoadingButton] = useState<string | null>(null);
+  const [loadingMessage, setLoadingMessage] = useState<string | null>(null);
+  const router = useRouter();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString("en-US", {
@@ -80,7 +85,7 @@ export default function PreviousShiftsTable({
 
   if (isLoading) {
     return (
-      <div className="w-full">
+      <div className="w-full h-screen">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
           <div className="animate-pulse">
             <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
@@ -97,7 +102,7 @@ export default function PreviousShiftsTable({
 
   if (error) {
     return (
-      <div className="w-full">
+      <div className="w-full h-screen">
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-red-800 mb-2">
@@ -121,20 +126,31 @@ export default function PreviousShiftsTable({
 
   if (!data?.shiftList || data.shiftList.length === 0) {
     return (
-      <div className="w-full">
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+      <div className="w-full h-screen flex flex-col items-center justify-center">
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 space-y-4 w-full text-center">
           <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-700 mb-2">
             No Previous Shifts
           </h3>
           <p className="text-gray-500">No shift history found for this user.</p>
+          <div className="w-full items-center justify-center flex">
+            <Link
+              href={`/dashboard/user/get-users/${companyCode}`}
+              className="cursor-pointer"
+            >
+              <button className="px-4 py-2 md:px-6 md:py-3 font-bold text-gray-500 flex space-x-2 items-center justify-center rounded-full border-[1px] curso-pointer ">
+                <ArrowLeft className="w-4 h-4" />
+                <p>Go to users</p>
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full space-y-6 ">
+    <div className="w-full space-y-6  h-screen">
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
           <div>
@@ -245,7 +261,15 @@ export default function PreviousShiftsTable({
                 </th>
               </tr>
             </thead>
+
             <tbody className="bg-white divide-y divide-gray-200">
+              {loadingButton && (
+                <div className="fixed inset-0 bg-gray-50 bg-opacity-50 z-50 flex items-center justify-center">
+                  <div className="md:px-6 md:py-4 rounded text-lg font-medium">
+                    {loadingMessage}
+                  </div>
+                </div>
+              )}
               {filteredAndSortedShifts.map((shift) => (
                 <tr
                   key={shift.shiftID}
@@ -298,23 +322,41 @@ export default function PreviousShiftsTable({
                       {calculateDuration(shift.shiftStart, shift.shiftEnd)}
                     </span>
                   </td>
+
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex space-x-2">
-                      <Link
-                        href={`/dashboard/shift/shift-sales-summary/${shift.shiftID}/${companyCode}/${userID}`}
+                      <button
+                        onClick={() => {
+                          setLoadingButton(`summary-${shift.shiftID}`);
+                          setLoadingMessage("Loading summary...");
+                          router.push(
+                            `/dashboard/shift/shift-sales-summary/${shift.shiftID}/${companyCode}/${userID}`
+                          );
+                        }}
+                        className="text-blue-600 hover:text-blue-900 font-medium transition-colors disabled:opacity-50"
+                        disabled={loadingButton === `summary-${shift.shiftID}`}
                       >
-                        <button className="text-blue-600 hover:text-blue-900 font-medium transition-colors">
-                          View Summary
-                        </button>
-                      </Link>
+                        {loadingButton === `summary-${shift.shiftID}`
+                          ? "Loading..."
+                          : "View Summary"}
+                      </button>
+
                       {shift.shiftStatus && (
-                        <Link
-                          href={`/dashboard/shift/shift-report/${shift.shiftID}/${companyCode}/${userID}`}
+                        <button
+                          onClick={() => {
+                            setLoadingButton(`report-${shift.shiftID}`);
+                            setLoadingMessage("Loading report...");
+                            router.push(
+                              `/dashboard/shift/shift-report/${shift.shiftID}/${companyCode}/${userID}`
+                            );
+                          }}
+                          className="text-green-600 hover:text-green-900 font-medium transition-colors disabled:opacity-50"
+                          disabled={loadingButton === `report-${shift.shiftID}`}
                         >
-                          <button className="text-green-600 hover:text-green-900 font-medium transition-colors">
-                            View Report
-                          </button>
-                        </Link>
+                          {loadingButton === `report-${shift.shiftID}`
+                            ? "Loading..."
+                            : "View Report"}
+                        </button>
                       )}
                     </div>
                   </td>
