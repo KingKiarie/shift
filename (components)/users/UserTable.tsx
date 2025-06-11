@@ -10,7 +10,6 @@ interface UsersTableProps {
 const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
   const { data: users, isLoading, error } = useUsers(companyCode);
 
-  // Filter states
   const [filterUserId, setFilterUserId] = useState("");
   const [filterFullName, setFilterFullName] = useState("");
   const [filterEmail, setFilterEmail] = useState("");
@@ -54,13 +53,12 @@ const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
     );
   }
 
-  // Filter users based on filter states
   const filteredUsers = users.filter((user) => {
     const matchesUserId = filterUserId
       ? user.id.toString().includes(filterUserId)
       : true;
     const matchesFullName = filterFullName
-      ? user.salesRepName?.toLowerCase().includes(filterFullName.toLowerCase())
+      ? user.SalesRepName?.toLowerCase().includes(filterFullName.toLowerCase())
       : true;
     const matchesEmail = filterEmail
       ? user.email.toLowerCase().includes(filterEmail.toLowerCase())
@@ -69,20 +67,18 @@ const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
       filterActive === ""
         ? true
         : filterActive === "active"
-        ? user.isActive === true
-        : user.isActive === false;
+        ? user.isActive === 1
+        : user.isActive === 0;
 
     return matchesUserId && matchesFullName && matchesEmail && matchesActive;
   });
 
-  // Pagination logic
   const startIdx = (currentPage - 1) * itemsPerPage;
   const endIdx = startIdx + itemsPerPage;
   const currentUsers = filteredUsers.slice(startIdx, endIdx);
 
   return (
     <section className="w-full items-center h-auto justify-center">
-      {/* Filters Section */}
       <div className="mb-4 flex flex-wrap gap-4 py-8 px-4 bg-white shadow-sm">
         <input
           type="text"
@@ -90,7 +86,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
           value={filterUserId}
           onChange={(e) => {
             setFilterUserId(e.target.value);
-            setCurrentPage(1); // reset to first page on filter change
+            setCurrentPage(1);
           }}
           className="border border-gray-300 rounded px-3 py-1"
         />

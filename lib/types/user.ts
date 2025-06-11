@@ -3,7 +3,7 @@ export interface User {
   email: string;
   role: string;
   companyCode: string;
-  isActive: boolean;
+  isActive: number;
   createdAt: string;
   erpUserCode?: string;
   SalesRepName: string;

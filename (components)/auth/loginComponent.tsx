@@ -188,10 +188,10 @@ export default function LoginComponent() {
 
             <div className="space-y-4 flex flex-col">
               <div className="flex justify-between py-4 px-2">
-                <label className="flex items-center space-x-2 text-gray-800 text-[12px]">
+                {/* <label className="flex items-center space-x-2 text-gray-800 text-[12px]">
                   <input type="checkbox" name="remember" className="w-4 h-4" />
                   <span>Remember me</span>
-                </label>
+                </label> */}
                 <Link href="/forgotten">
                   <p className="text-gray-400 text-[12px]">
                     Forgotten Password?
