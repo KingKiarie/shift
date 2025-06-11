@@ -14,6 +14,7 @@ export type TokenPayload = {
   areaCode: string;
   shiftID: number;
   SalesRepName?: string;
+  id: string;
 };
 
 export function decodeJWT(token?: string): TokenPayload | null {

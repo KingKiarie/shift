@@ -15,7 +15,7 @@ export default function Head() {
     if (decoded) {
       setUser({
         userName: decoded.userName,
-        shiftID: decoded.shiftID?.toString(), 
+        shiftID: decoded.shiftID?.toString(),
       });
     }
   }, []);
@@ -28,18 +28,19 @@ export default function Head() {
     );
   }
   return (
-    <header className="w-full bg-[#1e1e1e] ">
+    <header className="w-full bg-[#1e1e1e]">
       <div className="flex items-start justify-evenly   mx-auto">
-        <div className="lg:w-1/4 flex items-center justify-center text-white border-r-2 py-4 border-zinc-900 h-full border-b-2">
+        <div className="lg:w-1/4 w-full flex items-center justify-center max-w-[90%] mx-auto text-white border-r-2 py-4 border-zinc-900 h-full">
           <Image
             width={100}
             height={100}
             src={"/prime-foam.png"}
             alt="Prime mattress "
-          ></Image>
+            className="bg-white p-4 rounded-md"
+          />
         </div>
-        <div className="lg:w-3/4 py-4">
-          <div className="w-full flex flex-row items-start justify-between px-2">
+        <div className="lg:w-3/4 py-4 max-w-[90%] mx-auto">
+          <div className="w-full flex flex-row items-start justify-between ">
             <div className="w-full flex items-center justify-start">
               <h1 className="text-[16px] md:text-[24px] text-white font-medium">
                 Overview

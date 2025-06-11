@@ -8,14 +8,7 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { useState, useEffect } from "react";
-import {
-  CalendarSync,
-  LayoutDashboard,
-  Users,
-  Warehouse,
-  Menu,
-  X,
-} from "lucide-react";
+import { CalendarSync, Users, Menu, X } from "lucide-react";
 import { removeToken } from "@/lib/token";
 import { decodeJWT } from "@/lib/decodeJwt";
 import SkeletonLoader from "../common/skeleton";
@@ -27,8 +20,8 @@ export default function AsideMenu() {
   const searchParams = useSearchParams();
 
   const user = decodeJWT();
-  const userId =
-    user?.SalesRepName || user?.areaCode || user?.companyCode || null;
+  const userId = user?.id || user?.areaCode || user?.companyCode || null;
+
   const companyCode = params?.companyCode as string | null;
 
   const [shiftId, setShiftId] = useState<string | null>(() => {
@@ -70,15 +63,15 @@ export default function AsideMenu() {
   };
 
   const MenuContent = () => (
-    <aside className="w-full h-auto bg-[#1e1e1e] flex flex-col justify-between p-4">
+    <aside className="w-full h-auto bg-[#1e1e1e] flex flex-col justify-between p-4 shadow-md">
       <div className="flex flex-col w-full h-[100%] items-start justify-between">
-        <div className="flex items-center justify-center bg-blue-700 p-2 rounded-md w-full">
+        <div className="flex items-start justify-start bg-blue-700 p-2 rounded-md w-full">
           {/* <img
             src="/prime-foam.png"
             alt="Logo"
             className="w-20 h-10 object-cover bg-white rounded-md"
           /> */}
-          <h1 className="text-[20px] text-center text-white font-bold">
+          <h1 className="text-[20px] text-start text-white font-bold">
             Prime Mattress
           </h1>
         </div>

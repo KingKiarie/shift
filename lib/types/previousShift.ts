@@ -3,6 +3,7 @@ export interface PreviousShift {
   shiftStart: string; 
   shiftEnd: string | null; 
   shiftStatus: "OPEN" | "CLOSE"; 
+  
 }
 
 export interface PreviousShiftsResponse {
