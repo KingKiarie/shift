@@ -99,7 +99,7 @@ export default function AsideMenu() {
             <li>
               <button
                 onClick={() => setIsShiftMenuOpen((prev) => !prev)}
-                className="flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-[#353238] font-semibold"
+                className=" items-center justify-between w-full px-4 py-2 rounded-md hover:bg-[#353238] font-semibold hidden"
               >
                 <div className="flex items-center space-x-3">
                   <CalendarSync className="w-6 text-blue-600 h-6" />
@@ -109,7 +109,7 @@ export default function AsideMenu() {
               </button>
 
               {isShiftMenuOpen && (
-                <ul className="ml-6 mt-2 space-y-2 text-sm text-gray-300">
+                <ul className="hidden ml-6 mt-2 space-y-2 text-sm text-gray-300">
                   <li>
                     <Link
                       href={
