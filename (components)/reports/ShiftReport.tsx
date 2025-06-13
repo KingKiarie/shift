@@ -73,6 +73,7 @@ export const ShiftReportComponent: React.FC<ShiftReportComponentProps> = ({
           <h2 className="text-2xl font-bold text-gray-900">
             {shiftReport.reportname}
           </h2>
+          <p>salesperson:{shiftReport.shiftid}</p>
           <p className="text-gray-600">Shift ID: {shiftReport.shiftid}</p>
         </div>
         <div className="w-full flex items-end justify-end py-2">

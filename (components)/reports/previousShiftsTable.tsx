@@ -126,7 +126,7 @@ export default function PreviousShiftsTable({
 
   if (!data?.shiftList || data.shiftList.length === 0) {
     return (
-      <div className="w-full h-screen flex flex-col items-center justify-center">
+      <div className="w-full h-screen lg:h-auto flex flex-col items-center justify-center">
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 space-y-4 w-full text-center">
           <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-700 mb-2">
@@ -150,7 +150,7 @@ export default function PreviousShiftsTable({
   }
 
   return (
-    <div className="w-full space-y-6  h-screen">
+    <div className="w-full space-y-6  h-screen lg:h-auto">
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
           <div>

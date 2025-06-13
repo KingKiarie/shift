@@ -36,6 +36,11 @@ export const generateShiftReportPDF = (summary: any, fileName: string) => {
   y += 15;
 
   doc.setFontSize(12);
+  doc.setFont("helvetica", "normal");
+  doc.text(`Salesman:${summary.Salesman || "N/A"}`, 14, y);
+  y += 20;
+
+  doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
   doc.text("Report Details", 14, y);
   y += 10;
