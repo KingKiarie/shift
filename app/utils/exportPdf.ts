@@ -111,39 +111,50 @@ export const generateShiftReportPDF = (summary: any, fileName: string) => {
       { qtyTaken: 0, qtyReturned: 0, qtySold: 0, totalSale: 0 }
     ) || {};
 
-  const grandTotalsData = [
-    ["Qty Taken:", formatNumber(totals.qtyTaken || 0)],
-    ["Qty Returned:", formatNumber(totals.qtyReturned || 0)],
-    ["Qty Sold:", formatNumber(totals.qtySold || 0)],
-    ["Total Sale:", formatCurrency(totals.totalSale || 0)],
-    [
-      "Margin:",
-      summary.reportDetails?.[0]?.margin
-        ? formatCurrency(summary.reportDetails[0].margin)
-        : "KES 0.00",
-    ],
-  ];
+  // const grandTotalsData = [
+  //   [formatNumber(totals.qtyTaken || 0)],
+  //   [formatNumber(totals.qtyReturned || 0)],
+  //   [formatNumber(totals.qtySold || 0)],
+  //   [formatCurrency(totals.totalSale || 0)],
+  //   [
+  //     summary.reportDetails?.[0]?.margin
+  //       ? formatCurrency(summary.reportDetails[0].margin)
+  //       : "KES 0.00",
+  //   ],
+  // ];
+  const grandTotalsData =
+    summary.reportDetails?.map((item: any) => [
+      formatNumber(item.qtyTaken || 0),
+      formatNumber(item.qtyReturned || 0),
+      formatNumber(item.qtySold || 0),
+      formatNumber(item.totalSale || 0),
+      formatCurrency(item.margin || 0),
+    ]) || [];
 
   autoTable(doc, {
     startY: y,
+    head: [["Qty Taken", "Qty Returned", "Qty Sold", "Total Sale", "Margin"]],
     body: grandTotalsData,
     theme: "grid",
     styles: {
-      fontSize: 10,
+      fontSize: 8,
       textColor: [0, 0, 0],
       lineColor: [0, 0, 0],
       lineWidth: 0.5,
-      cellPadding: 3,
+      cellPadding: 2,
+    },
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: [0, 0, 0],
+      fontStyle: "bold",
+      lineColor: [0, 0, 0],
+      lineWidth: 0.5,
     },
     bodyStyles: {
       fillColor: [255, 255, 255],
       textColor: [0, 0, 0],
       lineColor: [0, 0, 0],
       lineWidth: 0.5,
-    },
-    columnStyles: {
-      0: { fontStyle: "normal", halign: "left" },
-      1: { fontStyle: "normal", halign: "right" },
     },
     didDrawPage: (data) => {
       y = (data.cursor?.y ?? 0) + 10;
@@ -166,24 +177,31 @@ export const generateShiftReportPDF = (summary: any, fileName: string) => {
   const netProfit = grandProfit - (summary.profitOverview?.shiftExpense || 0);
 
   const profitOverviewData = [
-    ["Grand Profit:", formatCurrency(grandProfit)],
     [
-      "Shift Expense:",
+      formatCurrency(grandProfit),
       formatCurrency(summary.profitOverview?.shiftExpense || 0),
+      formatCurrency(netProfit),
     ],
-    ["Net Profit:", formatCurrency(netProfit)],
   ];
 
   autoTable(doc, {
     startY: y,
+    head: [["Grand Profit", "Shift Expense", "Net Profit"]],
     body: profitOverviewData,
     theme: "grid",
     styles: {
-      fontSize: 10,
+      fontSize: 8,
       textColor: [0, 0, 0],
       lineColor: [0, 0, 0],
       lineWidth: 0.5,
-      cellPadding: 3,
+      cellPadding: 2,
+    },
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: [0, 0, 0],
+      fontStyle: "bold",
+      lineColor: [0, 0, 0],
+      lineWidth: 0.5,
     },
     bodyStyles: {
       fillColor: [255, 255, 255],
@@ -191,9 +209,8 @@ export const generateShiftReportPDF = (summary: any, fileName: string) => {
       lineColor: [0, 0, 0],
       lineWidth: 0.5,
     },
-    columnStyles: {
-      0: { fontStyle: "normal", halign: "left" },
-      1: { fontStyle: "normal", halign: "right" },
+    didDrawPage: (data) => {
+      y = (data.cursor?.y ?? 0) + 10;
     },
   });
 

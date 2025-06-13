@@ -1,7 +1,10 @@
+"use client";
+
 import React, { useState } from "react";
 import { useUsers } from "@/lib/hooks/useUsers";
 import Link from "next/link";
 import { Pagination } from "../pagination/pagination";
+import AnimatedList from "../animated/AnimatedList";
 
 interface UsersTableProps {
   companyCode: string;
@@ -140,11 +143,9 @@ const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 UserCode
               </th>
-
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Active
               </th>
-
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
@@ -165,7 +166,6 @@ const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {user.erpUserCode}
                 </td>
-
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   <span
                     className={`px-2 py-1 text-xs rounded-full ${
@@ -177,7 +177,6 @@ const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
                     {user.isActive ? "Active" : "Inactive"}
                   </span>
                 </td>
-
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <Link
                     href={`/dashboard/shift/previous-shifts/${companyCode}/${user.id}`}
@@ -191,13 +190,14 @@ const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
             ))}
             {currentUsers.length === 0 && (
               <tr>
-                <td colSpan={5} className="text-center py-4 text-gray-500">
+                <td colSpan={6} className="text-center py-4 text-gray-500">
                   No users match the filter criteria.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+
         <div>
           <Pagination
             currentPage={currentPage}
@@ -210,6 +210,31 @@ const UsersTable: React.FC<UsersTableProps> = ({ companyCode }) => {
           />
         </div>
       </div>
+
+      {/* <div className="mt-8 p-4">
+        <h2 className="text-[14px] font-semibold mb-4">User List</h2>
+        <AnimatedList
+          itemClassName=""
+          className="bg-white rounded-xl"
+          items={currentUsers.map((user) => ({
+            id: user.id,
+            userNames: user.SalesRepName || "Unnamed User",
+            email: user.email,
+            isActive: `${
+              user.isActive
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
+            } ${user.isActive ? "Active" : "Inactive"}
+`,
+          }))}
+          onItemSelect={(item, index) =>
+            console.log("Selected user:", item, index)
+          }
+          showGradients={true}
+          enableArrowNavigation={true}
+          displayScrollbar={true}
+        />
+      </div> */}
     </section>
   );
 };
