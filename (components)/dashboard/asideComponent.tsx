@@ -8,7 +8,14 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { useState, useEffect } from "react";
-import { CalendarSync, Users, Menu, X } from "lucide-react";
+import {
+  CalendarSync,
+  Users,
+  Menu,
+  X,
+  CloudSnowIcon,
+  HamburgerIcon,
+} from "lucide-react";
 import { removeToken } from "@/lib/token";
 import { decodeJWT } from "@/lib/decodeJwt";
 import SkeletonLoader from "../common/skeleton";
@@ -63,18 +70,14 @@ export default function AsideMenu() {
   };
 
   const MenuContent = () => (
-    <aside className="w-full h-[100%] bg-[#1e1e1e] flex flex-col justify-between p-4 ">
-      <div className="flex flex-col w-full  lg:h-auto items-start justify-between">
-        <div className="w-full flex flex-col">
-          <div className="flex items-start justify-start bg-blue-700 p-2 rounded-md w-full">
-            {/* <img
-            src="/prime-foam.png"
-            alt="Logo"
-            className="w-20 h-10 object-cover bg-white rounded-md"
-          /> */}
+    <aside className="w-full h-[100%] pr-4 bg-[#1e1e1e]/50 lg:bg-[#1e1e1e]/80 flex flex-col justify-between py-4">
+      <div className="flex flex-col w-full  lg:h-auto items-start justify-between space-y-4">
+        <div className="w-full flex flex-col space-y-4">
+          <div className="flex items-center justify-start bg-blue-700 p-4 rounded-r-full  w-full space-x-4  ">
             <h1 className="text-[20px] text-start text-white font-bold">
               Prime Mattress
             </h1>
+            <span className="rounded-md animate-pulse flex item-center justify-center-spin w-2 h-2 duration-500  bg-green-500"></span>
           </div>
           <div className="w-full">
             <ul className="mt-8 space-y-4">
@@ -84,10 +87,10 @@ export default function AsideMenu() {
                   <li key={name}>
                     <Link
                       href={slug}
-                      className={`flex items-center space-x-3 px-4 py-2 rounded-md ${
+                      className={`flex items-center space-x-3 p-4 rounded-r-full bg-blue-200 hover:bg-blue-400 ease-in-out duration-300 ${
                         isActive
                           ? "bg-blue-600 text-white"
-                          : "text-gray-400 hover:bg-[#353238]"
+                          : "text-blue-800 hover:bg-[#353238]"
                       }`}
                     >
                       {icon}
@@ -106,7 +109,9 @@ export default function AsideMenu() {
                     <CalendarSync className="w-6 text-blue-600 h-6" />
                     <span className="text-white"> View Shifts</span>
                   </div>
-                  <span>{isShiftMenuOpen ? "−" : "+"}</span>
+                  <span>
+                    {isShiftMenuOpen ? <CloudSnowIcon /> : <HamburgerIcon />}
+                  </span>
                 </button>
 
                 {isShiftMenuOpen && (
@@ -166,13 +171,14 @@ export default function AsideMenu() {
           </div>
         </div>
       </div>
-
-      <button
-        onClick={handleLogOut}
-        className="w-full mt-8 bg-red-500 hover:bg-red-400 py-2 rounded-md text-white font-bold"
-      >
-        Logout
-      </button>
+      <div className="flex items-center justify-center">
+        <button
+          onClick={handleLogOut}
+          className="w-full mt-8 bg-red-500 hover:bg-red-400 p-4 rounded-r-full text-white font-bold"
+        >
+          Logout
+        </button>
+      </div>
     </aside>
   );
 

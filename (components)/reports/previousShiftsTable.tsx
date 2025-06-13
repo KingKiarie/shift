@@ -263,13 +263,15 @@ export default function PreviousShiftsTable({
             </thead>
 
             <tbody className="bg-white divide-y divide-gray-200">
-              {loadingButton && (
-                <div className="fixed inset-0 bg-gray-50 bg-opacity-50 z-50 flex items-center justify-center">
-                  <div className="md:px-6 md:py-4 rounded text-lg font-medium">
-                    {loadingMessage}
-                  </div>
-                </div>
-              )}
+              <tr>
+                {loadingButton && (
+                  <tr className="fixed inset-0 bg-gray-50 bg-opacity-50 z-50 flex items-center justify-center">
+                    <div className="md:px-6 md:py-4 rounded text-lg font-medium">
+                      {loadingMessage}
+                    </div>
+                  </tr>
+                )}
+              </tr>
               {filteredAndSortedShifts.map((shift) => (
                 <tr
                   key={shift.shiftID}

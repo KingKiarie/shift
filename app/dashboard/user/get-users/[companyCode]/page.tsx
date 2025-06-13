@@ -10,11 +10,11 @@ export default function GetUsersPage() {
   console.log("Company Code:", companyCode);
 
   return (
-    <section className="w-full h-auto flex items-start justify-center flex-col">
+    <section className="w-full xl:h-screen lg:h-screen h-auto flex items-start justify-start flex-col">
       <div className="w-full max-w-[90%] mx-auto">
         <h1 className="text-2xl font-bold mb-4">Users available</h1>
         <div className="w-full h-auto">
-          <UsersTable companyCode={companyCode}  />
+          <UsersTable companyCode={companyCode} />
         </div>
       </div>
     </section>

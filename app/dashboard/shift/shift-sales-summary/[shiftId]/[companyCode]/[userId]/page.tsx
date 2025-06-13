@@ -45,7 +45,7 @@ export default function ShiftSalesSummaryPage() {
   }
 
   return (
-    <section className="h-auto">
+    <section className="h-auto lg:h-auto xl:h-auto">
       <div className="max-w-[95%] mx-auto py-12 flex flex-col space-y-4">
         <div className="w-full flex items-start justify-between">
           <div className="flex space-x-2 items-center group group-hover:text-blue-500 ">

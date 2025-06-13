@@ -30,7 +30,7 @@ export default function Head() {
   return (
     <header className="w-full bg-[#1e1e1e]">
       <div className="flex flex-col lg:flex-row items-start justify-evenly   mx-auto">
-        <div className="lg:w-1/4 w-full flex items-center justify-center max-w-[90%] mx-auto text-white border-r-2 py-4 border-zinc-900 h-full">
+        <div className="lg:w-1/4 w-full flex items-center justify-center max-w-[90%] mx-auto text-white  py-4 h-full">
           <Image
             width={60}
             height={60}

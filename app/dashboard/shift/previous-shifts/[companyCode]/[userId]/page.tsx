@@ -14,7 +14,7 @@ export default function PreviousShiftsPage() {
 
   if (!companyCode || !userID) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen lg:h-screen xl:h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-md text-center">
           <h2 className="text-xl font-semibold text-gray-800 mb-2">
             Missing Information
@@ -28,7 +28,7 @@ export default function PreviousShiftsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen xl:h-screen lg:h-screen bg-gray-50 py-8">
       <div className="max-w-[95%] mx-auto w-full ">
         <PreviousShiftsTable companyCode={companyCode} userID={userID} />
       </div>
