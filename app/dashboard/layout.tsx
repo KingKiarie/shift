@@ -4,6 +4,7 @@ import AsideMenu from "@/(components)/dashboard/asideComponent";
 import Head from "@/(components)/dashboard/head";
 import { ReactNode } from "react";
 import Providers from "../providers";
+import { FadeInWrapper } from "@/(components)/animated/FadeInWrapper";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
@@ -17,7 +18,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <AsideMenu />
           </div>
           <div className="w-full lg:w-3/4">
-            <Providers>{children}</Providers>
+            <FadeInWrapper>
+              <Providers>{children}</Providers>
+            </FadeInWrapper>
           </div>
         </main>
       </section>
